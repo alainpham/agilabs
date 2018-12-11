@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
+	<bean
+		class="org.apache.camel.component.salesforce.SalesforceComponent"
+		id="salesforce" scope="singleton">
+		<property name="loginUrl" value="https://test.salesforce.com" />
+		<property name="clientId"
+			value="YOURCLIENTID" />
+		<property name="clientSecret" value="YOURSECRET" />
+		<property name="userName" value="YOURUSER" />
+		<property name="password"
+			value="YOURPWDANDTOKEN" />
+		<property name="packages">
+			<list>
+				<value>org.apache.camel.salesforce.dto</value>
+			</list>
+		</property>
+	</bean>
+	<camelContext id="lab10-any-to-salesforce"
+		xmlns="http://camel.apache.org/schema/spring">
+		<rest bindingMode="off" id="restsvc" path="/restsvc">
+			<get id="ping" uri="/ping">
+				<route>
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+			<get id="limits" uri="/limits">
+				<to uri="direct:limitsRoute" />
+			</get>
+		</rest>
+		<rest id="account" path="/account">
+			<post bindingMode="off" id="insertOrUpdateAccount"
+				type="org.apache.camel.salesforce.dto.Account"
+				uri="/{becem__Inet_Id__c}">
+				<to uri="direct:insertOrUpdateAccount" />
+			</post>
+			<get id="queryAccount"
+				outType="org.apache.camel.salesforce.dto.QueryRecordsAccount">
+				<param name="name" type="query" />
+				<to uri="direct:queryAccount" />
+			</get>
+			<get bindingMode="off" id="getAccountById" uri="/{id}">
+				<to uri="direct:getAccount" />
+			</get>
+		</rest>
+
+		<route id="http-receiver">
+			<from id="http-receiver-starter" uri="servlet://ping" />
+			<setHeader headerName="Content-Type" id="_setHeader1">
+				<constant>application/json</constant>
+			</setHeader>
+			<log message="${header.becem__Inet_Id__c}"></log>
+			<log message="${body}"></log>
+			<setBody id="setPingResponse">
+				<constant>{"msg" : "HELLO"}</constant>
+			</setBody>
+		</route>
+
+		<route id="getLimits">
+			<from id="getLimitsStarter" uri="direct:limitsRoute" />
+			<to id="callSfForLimits" uri="salesforce:limits?rawPayload=true" />
+		</route>
+
+
+		<route id="inserOrUpdateSingleAccount">
+			<from id="inserOrUpdateSingleAccountStarter"
+				uri="direct:insertOrUpdateAccount" />
+			<convertBodyTo id="convertInsertToString"
+				type="java.lang.String" />
+			<log id="insertRequest" message="${body.class} ${body}" />
+			<toD id="callUpsertService"
+				uri="salesforce:upsertSObject?sObjectName=Account&amp;sObjectIdName=becem__Inet_Id__c&amp;sObjectIdValue=${header.becem__Inet_Id__c}&amp;rawPayload=true" />
+			<choice id="_choice1">
+				<when id="_when1">
+					<simple>${body} == null</simple>
+					<setBody id="_setBody2">
+						<constant>{"status" : "updated"}</constant>
+					</setBody>
+					<log id="_log2" message="${headers}" />
+				</when>
+				<otherwise id="_otherwise1">
+					<convertBodyTo id="_convertBodyTo2"
+						type="java.lang.String" />
+					<log id="_log3" message="${body}" />
+				</otherwise>
+			</choice>
+		</route>
+
+
+
+		<route id="queryAccountRoute">
+			<from id="_from3" uri="direct:queryAccount" />
+			<toD id="_toD2"
+				uri="salesforce:query?sObjectClass=org.apache.camel.salesforce.dto.QueryRecordsAccount&amp;sObjectQuery=SELECT Id, Name,becem__Inet_Id__c FROM Account where Name='${header.name}'&amp;rawPayload=false" />
+			<log id="_log4" message="${headers}" />
+			<log id="_log5" message="${body.class} ${body}" />
+		</route>
+		<route id="getAccount">
+			<from id="_from4" uri="direct:getAccount" />
+			<toD id="_toD3"
+				uri="salesforce:getSObject?sObjectName=Account&amp;sObjectId=${header.id}&amp;rawPayload=true" />
+			<convertBodyTo id="_convertBodyTo3"
+				type="java.lang.String" />
+			<log id="_log6" message="${headers}" />
+			<log id="_log7" message="${body.class} ${body}" />
+		</route>
+		
+		
+		
+		<route id="sfstream">
+			<from id="_from5"
+				uri="salesforce:CamelTestTopic?notifyForFields=ALL&amp;sObjectName=Account&amp;updateTopic=true&amp;sObjectQuery=SELECT Id, Name,becem__Inet_Id__c,LastModifiedById FROM Account where LastModifiedById!='0050D000000cAOjQAM'&amp;rawPayload=true" />
+			<log id="_log8" message="${body}" />
+			<log id="_log9" message="${headers}" />
+		</route>
+
+		<route id="servlet-to-kafka">
+			<from id="servlet-to-kafka-starter" uri="servlet://kafkaagg" />
+			<inOnly uri="{{kafka.endpoint.standard}}"></inOnly>
+		</route>
+
+		<route id="kafka-to-sf">
+			<from id="kafka-to-sf-starter" uri="{{kafka.endpoint.standard}}" />
+			<from id="servlet-to-sf-starter" uri="servlet://agg" />
+			<convertBodyTo id="_convertBodyTo4"
+				type="java.lang.String" />
+			<unmarshal id="_unmarshal1">
+				<json library="Jackson" />
+			</unmarshal>
+			<setHeader headerName="becem__Inet_Id__c">
+				<simple>${body.get('becem__Public_Id__c')}</simple>
+			</setHeader>
+			<aggregate completeAllOnStop="true" id="_aggregate1"
+				strategyRef="aggregateUpserts" parallelProcessing="true">
+				<correlationExpression>
+					<constant>0</constant>
+				</correlationExpression>
+				<completionTimeout>
+					<constant>3000</constant>
+				</completionTimeout>
+				<completionSize>
+					<constant>25</constant>
+				</completionSize>
+				<to id="_to3" uri="direct:upsertBatch" />
+			</aggregate>
+			<setBody>
+				<constant>{"msg" : "ok"}</constant>
+			</setBody>
+		</route>
+		
+		
+		
+		<route id="_route5">
+			<from id="_from7" uri="direct:upsertBatch" />
+			<removeHeaders id="_removeHeaders1" pattern="*" />
+			<process id="_process1" ref="prepareSfCall" />
+			<marshal id="_marshal2">
+				<json library="Jackson" />
+			</marshal>
+			<log id="logInput" message="${body}" />
+			<to id="_to4" uri="https4" />
+			<unmarshal id="_unmarshal2">
+				<json library="Jackson" />
+			</unmarshal>
+			<marshal id="_marshal3">
+				<json library="Jackson" />
+			</marshal>
+			<log id="logresponse" message="${body}" />
+			<log id="logQuota" message=" ${headers.Sforce-Limit-Info}" />
+		</route>
+	</camelContext>
+</beans>

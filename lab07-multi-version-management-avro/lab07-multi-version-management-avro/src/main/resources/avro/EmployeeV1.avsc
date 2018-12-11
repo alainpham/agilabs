@@ -1,0 +1,9 @@
+{	"namespace": "example.avro1",
+    "type": "record",
+    "name": "Employee",
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "int"},
+        {"name": "emails", "type": {"type": "array", "items": "string"}}
+    ]
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
+
+
+
+	<camelContext id="lab07-multi-version-management-avro"
+		xmlns="http://camel.apache.org/schema/spring">
+		<rest id="rest-3c2ba0b3-836c-4458-bec2-839b09d43c69"
+			path="/restsvc">
+			<get id="get-fc3a25ff-2f1c-4886-a47a-5fddb5a7b171" uri="/ping">
+				<route>
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+		</rest>
+		<route id="http-receiver">
+			<from id="http-receiver-starter" uri="servlet://ping" />
+			<setHeader headerName="Content-Type" id="_setHeader1">
+				<constant>application/json</constant>
+			</setHeader>
+			<setBody id="_setBody1">
+				<constant>{"msg" : "HELLO"}</constant>
+			</setBody>
+		</route>
+		<route id="v1producerV2Consumer">
+			<from uri="timer:start" />
+			<setBody>
+				<constant> { "firstName" : "John", "lastName" : "Doe" } </constant>
+			</setBody>
+			<unmarshal>
+				<json library="Jackson" unmarshalTypeName="agilabs.PersonV2" />
+			</unmarshal>
+			<marshal>
+				<json library="Jackson" />
+			</marshal>
+			<log id="log-body" message=">>> ${body}" />
+		</route>
+		
+		<route id="v2producerV1Consumer">
+			<from uri="timer:start" />
+			<setBody>
+				<constant> { "firstName" : "John", "lastName" 
+			: "Doe", "middleName" : "Edgar" } </constant>
+			</setBody>
+			<unmarshal>
+				<json library="Jackson" unmarshalTypeName="agilabs.PersonV1" />
+			</unmarshal>
+			<marshal>
+				<json library="Jackson" />
+			</marshal>
+			<log message=">>> ${body}" />
+		</route>
+	</camelContext>
+</beans>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
+
+	<sslContextParameters id="sslContextParameters"
+		xmlns="http://camel.apache.org/schema/spring">
+		<keyManagers keyPassword="password">
+			<keyStore password="password" resource="keystore.p12" />
+		</keyManagers>
+		<trustManagers>
+			<keyStore password="password" resource="trust.p12" />
+		</trustManagers>
+	</sslContextParameters>
+
+	<camelContext id="lab02-service-composition-mock-fuse"
+		xmlns="http://camel.apache.org/schema/spring">
+		<rest id="customersvcmock">
+			<get id="getCustomer" outType="agilabs.Customer"
+				produces="application/json" uri="/customer/{id}">
+				<to uri="direct:getCustomer" />
+			</get>
+		</rest>
+		<route id="getCustomerRoute">
+			<from id="getCustomerRouteStarter" uri="direct:getCustomer" />
+			<to uri="direct:logStartEvent" />
+			<to
+				uri="sql:select * from customer where id=:#${header.id}?outputType=SelectOne&amp;outputClass=agilabs.Customer" />
+			<log message="${body.class}" />
+			<to uri="direct:logEndEvent" />
+		</route>
+		<!-- Logging -->
+		<route id="logStartEvent">
+			<from uri="direct:logStartEvent" />
+			<setHeader headerName="startts">
+				<method beanType="java.lang.System"
+					method="currentTimeMillis" />
+			</setHeader>
+			<wireTap id="logEventSart" pattern="OutOnly"
+				uri="{{loggingEndpoint}}">
+				<body>
+					<method
+						method="generateEvent(${headers.breadcrumbId},'start',null,${body})"
+						ref="monitoringEventFactory" />
+				</body>
+				<setHeader headerName="CamelHttpMethod">
+					<constant>POST</constant>
+				</setHeader>
+				<setHeader headerName="Content-Type">
+					<constant>application/json</constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpQuery">
+					<constant></constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpPath">
+					<constant></constant>
+				</setHeader>
+			</wireTap>
+		</route>
+		<route id="logEndEvent">
+			<from uri="direct:logEndEvent" />
+			<setHeader headerName="endts">
+				<method beanType="java.lang.System"
+					method="currentTimeMillis" />
+			</setHeader>
+			<process ref="elapsedTimeProcessor" />
+			<wireTap id="logEventOk" pattern="OutOnly"
+				uri="{{loggingEndpoint}}">
+				<body>
+					<method
+						method="generateEvent(${headers.breadcrumbId},'success',${header.elapsedMs},${body})"
+						ref="monitoringEventFactory" />
+				</body>
+				<setHeader headerName="CamelHttpMethod">
+					<constant>POST</constant>
+				</setHeader>
+				<setHeader headerName="Content-Type">
+					<constant>application/json</constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpQuery">
+					<constant></constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpPath">
+					<constant></constant>
+				</setHeader>
+			</wireTap>
+		</route>
+		<route id="logErrorEvent">
+			<from uri="direct:logErrorEvent" />
+			<setHeader headerName="endts">
+				<method beanType="java.lang.System"
+					method="currentTimeMillis" />
+			</setHeader>
+			<process ref="elapsedTimeProcessor" />
+			<wireTap id="logEventError" pattern="OutOnly"
+				uri="{{loggingEndpoint}}">
+				<body>
+					<method
+						method="generateEvent(${headers.breadcrumbId},'error',${header.elapsedMs},'error')"
+						ref="monitoringEventFactory" />
+				</body>
+				<setHeader headerName="CamelHttpMethod">
+					<constant>POST</constant>
+				</setHeader>
+				<setHeader headerName="Content-Type">
+					<constant>application/json</constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpQuery">
+					<constant></constant>
+				</setHeader>
+				<setHeader headerName="CamelHttpPath">
+					<constant></constant>
+				</setHeader>
+			</wireTap>
+		</route>
+	</camelContext>
+</beans>

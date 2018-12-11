@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
+    <sslContextParameters id="sslContextParameters" xmlns="http://camel.apache.org/schema/spring">
+        <keyManagers keyPassword="password">
+            <keyStore password="password" resource="keystore.p12"/>
+        </keyManagers>
+        <trustManagers>
+            <keyStore password="password" resource="trust.p12"/>
+        </trustManagers>
+    </sslContextParameters>
+    <camelContext id="lab02-service-composition" xmlns="http://camel.apache.org/schema/spring">
+        <hystrixConfiguration circuitBreakerEnabled="true"
+            executionTimeoutInMilliseconds="1000" id="hystrixConfig"/>
+        <rest id="dummyRestSvc" path="/restsvc">
+            <get id="getPing" uri="/ping">
+                <route>
+                    <setBody>
+                        <method ref="myTransformer"/>
+                    </setBody>
+                </route>
+            </get>
+        </rest>
+        <route id="http-receiver">
+            <from id="http-receiver-starter" uri="servlet://ping"/>
+            <setHeader headerName="Content-Type" id="_setHeader1">
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody id="_setBody1">
+                <constant>{"msg" : "HELLO"}</constant>
+            </setBody>
+        </route>
+        <route id="getCustomerRoute">
+            <from id="getCustomerStarter" uri="direct:getCustomer"/>
+            <to id="_to1" uri="direct:callRestSvc"/>
+            <enrich id="enrichWithSql" strategyRef="mapCustomer">
+                <constant>sql:select id,status from customerstatus where id=:#${header.id}?outputType=SelectOne&amp;outputClass=restsvc.model.Customer</constant>
+            </enrich>
+        </route>
+        <route id="callRestSvc">
+            <from id="_from1" uri="direct:callRestSvc"/>
+            <throttle asyncDelayed="true" id="_throttle1" timePeriodMillis="1000">
+                <constant>3</constant>
+                <setHeader headerName="CamelHttpMethod" id="_setHeader2">
+                    <constant>GET</constant>
+                </setHeader>
+                <setHeader headerName="CamelHttpPath" id="_setHeader3">
+                    <simple>/camel/customer/${header.id}</simple>
+                </setHeader>
+                <to id="_to2" uri="{{backend.url}}"/>
+                <unmarshal id="_unmarshal1">
+                    <json library="Jackson" unmarshalTypeName="remotesvc.model.Customer"/>
+                </unmarshal>
+                <log id="_log1" message="${body.class}"/>
+                <setProperty id="_setProperty1" propertyName="callRestSvc.output">
+                    <simple>${body}</simple>
+                </setProperty>
+            </throttle>
+        </route>
+        <route id="getCustomerWithCBRoute">
+            <from id="_from2" uri="direct:getCustomerCB"/>
+            <hystrix hystrixConfigurationRef="hystrixConfig" id="getCustomerRouteCB">
+                <to id="_to3" uri="direct:logStartEvent"/>
+                <to id="_to4" uri="direct:getCustomer"/>
+                <to id="_to5" uri="direct:logEndEvent"/>
+                <onFallback id="_onFallback1">
+                    <to id="_to6" uri="direct:generic-fallback-route"/>
+                </onFallback>
+            </hystrix>
+        </route>
+        <route id="generic-fallback-route">
+            <from id="_from3" uri="direct:generic-fallback-route"/>
+            <setHeader headerName="CamelHttpResponseCode" id="_setHeader4">
+                <constant>500</constant>
+            </setHeader>
+            <log id="_log2" message="headers ${headers}"/>
+            <log id="_log3" message="body ${body}"/>
+            <log id="_log4" message="props ${exchange.properties}"/>
+            <setBody id="_setBody2">
+                <simple>{"error" : "REQUEST FAILED :  ${property.CamelExceptionCaught}"}</simple>
+            </setBody>
+        </route>
+        <!-- Logging -->
+        <route id="logStartEvent">
+            <from id="_from4" uri="direct:logStartEvent"/>
+            <setHeader headerName="startts" id="_setHeader5">
+                <method beanType="java.lang.System" method="currentTimeMillis"/>
+            </setHeader>
+            <wireTap id="logEventSart" pattern="OutOnly" uri="{{loggingEndpoint}}">
+                <body>
+                    <method
+                        method="generateEvent(${headers.breadcrumbId},'start',null,${body})" ref="monitoringEventFactory"/>
+                </body>
+                <setHeader headerName="CamelHttpMethod">
+                    <constant>POST</constant>
+                </setHeader>
+                <setHeader headerName="Content-Type">
+                    <constant>application/json</constant>
+                </setHeader>
+                <setHeader headerName="CamelHttpQuery">
+                    <constant/>
+                </setHeader>
+                <setHeader headerName="CamelHttpPath">
+                    <constant/>
+                </setHeader>
+            </wireTap>
+        </route>
+        <route id="logEndEvent">
+            <from id="_from5" uri="direct:logEndEvent"/>
+            <setHeader headerName="endts" id="_setHeader6">
+                <method beanType="java.lang.System" method="currentTimeMillis"/>
+            </setHeader>
+            <process id="_process1" ref="elapsedTimeProcessor"/>
+            <wireTap id="logEventOk" pattern="OutOnly" uri="{{loggingEndpoint}}">
+                <body>
+                    <method
+                        method="generateEvent(${headers.breadcrumbId},'success',${header.elapsedMs},${body})" ref="monitoringEventFactory"/>
+                </body>
+                <setHeader headerName="CamelHttpMethod">
+                    <constant>POST</constant>
+                </setHeader>
+                <setHeader headerName="Content-Type">
+                    <constant>application/json</constant>
+                </setHeader>
+                <setHeader headerName="CamelHttpQuery">
+                    <constant/>
+                </setHeader>
+                <setHeader headerName="CamelHttpPath">
+                    <constant/>
+                </setHeader>
+            </wireTap>
+        </route>
+        <route id="logErrorEvent">
+            <from id="_from6" uri="direct:logErrorEvent"/>
+            <setHeader headerName="endts" id="_setHeader7">
+                <method beanType="java.lang.System" method="currentTimeMillis"/>
+            </setHeader>
+            <process id="_process2" ref="elapsedTimeProcessor"/>
+            <wireTap id="logEventError" pattern="OutOnly" uri="{{loggingEndpoint}}">
+                <body>
+                    <method
+                        method="generateEvent(${headers.breadcrumbId},'error',${header.elapsedMs},'error')" ref="monitoringEventFactory"/>
+                </body>
+                <setHeader headerName="CamelHttpMethod">
+                    <constant>POST</constant>
+                </setHeader>
+                <setHeader headerName="Content-Type">
+                    <constant>application/json</constant>
+                </setHeader>
+                <setHeader headerName="CamelHttpQuery">
+                    <constant/>
+                </setHeader>
+                <setHeader headerName="CamelHttpPath">
+                    <constant/>
+                </setHeader>
+            </wireTap>
+        </route>
+    </camelContext>
+</beans>

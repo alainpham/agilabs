@@ -1,0 +1,89 @@
+---
+apiVersion: "v1"
+kind: "List"
+items:
+- apiVersion: "v1"
+  kind: "ServiceAccount"
+  metadata:
+    labels:
+      provider: "fabric8"
+      project: "hystrix-dashboard"
+      version: "1.0.28"
+      group: "io.fabric8.kubeflix"
+    name: "ribbon"
+- apiVersion: "v1"
+  kind: "Service"
+  metadata:
+    annotations:
+      fabric8.io/app-menu: "management"
+      fabric8.io/git-commit: "2656e3679d0034bb63c83e429f17135b30ed7d71"
+      fabric8.io/git-branch: "release-v1.0.28"
+    labels:
+      project: "hystrix-dashboard"
+      provider: "fabric8"
+      version: "1.0.28"
+      group: "io.fabric8.kubeflix"
+      expose: "true"
+    name: "hystrix-dashboard"
+  spec:
+    ports:
+    - port: 80
+      protocol: "TCP"
+      targetPort: 8080
+    selector:
+      project: "hystrix-dashboard"
+      provider: "fabric8"
+      group: "io.fabric8.kubeflix"
+    type: "LoadBalancer"
+- apiVersion: "v1"
+  kind: "DeploymentConfig"
+  metadata:
+    annotations:
+      fabric8.io/git-commit: "2656e3679d0034bb63c83e429f17135b30ed7d71"
+      fabric8.io/metrics-path: "dashboard/file/kubernetes-pods.json/?var-project=hystrix-dashboard&var-version=1.0.28"
+      fabric8.io/git-branch: "release-v1.0.28"
+    labels:
+      project: "hystrix-dashboard"
+      provider: "fabric8"
+      version: "1.0.28"
+      group: "io.fabric8.kubeflix"
+    name: "hystrix-dashboard"
+  spec:
+    replicas: 1
+    selector:
+      project: "hystrix-dashboard"
+      provider: "fabric8"
+      group: "io.fabric8.kubeflix"
+    strategy:
+      rollingParams:
+        timeoutSeconds: 10800
+      type: "Rolling"
+    template:
+      metadata:
+        annotations:
+          fabric8.io/git-commit: "2656e3679d0034bb63c83e429f17135b30ed7d71"
+          fabric8.io/metrics-path: "dashboard/file/kubernetes-pods.json/?var-project=hystrix-dashboard&var-version=1.0.28"
+          fabric8.io/git-branch: "release-v1.0.28"
+        labels:
+          project: "hystrix-dashboard"
+          provider: "fabric8"
+          version: "1.0.28"
+          group: "io.fabric8.kubeflix"
+      spec:
+        containers:
+        - env:
+          - name: "KUBERNETES_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: "metadata.namespace"
+          image: "fabric8/hystrix-dashboard:1.0.28"
+          imagePullPolicy: "IfNotPresent"
+          name: "hystrix-dashboard"
+          ports:
+          - containerPort: 8080
+            name: "http"
+          securityContext:
+            privileged: false
+        serviceAccountName: "ribbon"
+    triggers:
+    - type: "ConfigChange"

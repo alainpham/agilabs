@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
+	<camelContext id="lab01-basic-service"
+		xmlns="http://camel.apache.org/schema/spring">
+		<rest id="rest-1cc79fb2-3748-4822-b781-6fc09ac5d4f8"
+			path="/restsvc">
+			<get id="get-3b3914d0-0de1-421a-85b9-ddddb5d5c110" uri="/ping">
+				<route>
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+		</rest>
+		<route id="http-receiver">
+			<from id="http-receiver-starter" uri="servlet://ping" />
+			<setHeader headerName="Content-Type" id="_setHeader1">
+				<constant>application/json</constant>
+			</setHeader>
+			<setBody id="_setBody1">
+				<constant>{"msg" : "HELLO"}</constant>
+			</setBody>
+		</route>
+		<route id="_route1">
+			<from id="_from1" uri="servlet:choice" />
+			<choice>
+				<when>
+					<xpath>/msg='random'</xpath>
+					<setBody>
+						<simple>random(0,1)</simple>
+					</setBody>
+				</when>
+				<otherwise>
+					<setBody>
+						<constant>0</constant>
+					</setBody>
+				</otherwise>
+			</choice>
+		</route>
+	</camelContext>
+</beans>

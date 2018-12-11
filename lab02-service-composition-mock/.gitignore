@@ -1,0 +1,23 @@
+# IntelliJ
+.idea
+*.iml
+target
+
+# Eclipse
+.metadata
+.settings
+.classpath
+.project
+bin
+tmp
+
+**/target/
+**/.project
+**/.settings
+**/.classpath
+**/*.jar
+**/*.log
+**/.vscode
+**/*.iml
+**/.idea
+**/log-camel-lsp.out

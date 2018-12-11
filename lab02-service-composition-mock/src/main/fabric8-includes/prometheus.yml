@@ -1,0 +1,4 @@
+startDelaySecs: 5
+ssl: false
+blacklistObjectNames: ["java.lang:*"]
+rules:

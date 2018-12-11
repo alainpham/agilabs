@@ -1,0 +1,103 @@
+#!groovy
+/*
+ * This Jenkins Pipeline depends on the following plugins :
+ *  - Pipeline Utility Steps (https://plugins.jenkins.io/pipeline-utility-steps)
+ *  - Credentials Binding (https://plugins.jenkins.io/credentials-binding)
+ *
+ * This pipeline accepts the following parameters :
+ *  - OPENSHIFT_IMAGE_STREAM: The ImageStream name to use to tag the built images
+ *  - OPENSHIFT_BUILD_CONFIG: The BuildConfig name to use
+ *  - OPENSHIFT_SERVICE: The Service object to update (either green or blue)
+ *  - OPENSHIFT_DEPLOYMENT_CONFIG: The DeploymentConfig name to use
+ *  - OPENSHIFT_BUILD_PROJECT: The OpenShift project in which builds are run
+ *  - OPENSHIFT_TEST_ENVIRONMENT: The OpenShift project in which we will deploy the test version
+ *  - OPENSHIFT_PROD_ENVIRONMENT: The OpenShift project in which we will deploy the prod version
+ *  - OPENSHIFT_TEST_URL: The App URL in the test environment (to run the integration tests)
+ *  - NEXUS_REPO_URL: The URL of your Nexus repository. Something like http://<nexushostname>/repository/maven-snapshots/
+ *  - NEXUS_MIRROR_URL: The URL of your Nexus public mirror. Something like http://<nexushostname>/repository/maven-all-public/
+ *  - NEXUS_USER: A nexus user allowed to push your software. Usually 'admin'.
+ *  - NEXUS_PASSWORD: The password of the nexus user. Usually 'admin123'.
+ */
+
+node('maven') {
+def mvn = "mvn -s mvn-settings.xml"
+            /*env.devns = "${DEV_NS}";
+            /env.prodns = "${PROD_NS}";
+            env.appname = "${APPLICATION_NAME}";*/
+            env.nexusMirror = "MYMAVEN";
+
+            stage('checkoutSource') {
+              git url: "YOURGITURL"
+              
+              print """Checking out source setting nexus mirror to ${env.nexusMirror}"""
+                 // Generate the maven settings file from parameters
+              writeFile file: 'mvn-settings.xml', text: """
+<?xml version="1.0"?>
+<settings>
+  <mirrors>
+    <mirror>
+      <id>Nexus</id>
+      <name>Nexus Public Mirror</name>
+      <url>${env.nexusMirror}</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+"""
+            }
+            stage('build') {
+              print 'building projects'
+              sh "oc project fuse-test && ${mvn} -P ocp -DskipTests fabric8:deploy"
+            }
+            stage ('promotionCheck'){
+              def userInput = input( id: "userInput", message: "Promote to PROD?", parameters:
+                [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
+              print 'promotionCheck'
+            }
+            stage('tagForProd'){
+                openshiftTag alias: 'false', destStream: 'uc1-fuse-composition', srcTag: "latest",
+                 destinationNamespace: 'fuse-prod', namespace: 'fuse-test',
+                 srcStream: 'uc1-fuse-composition', destTag: 'ready-for-prod', verbose: 'false'
+            }
+            stage('deployOnNewTarget'){
+                sh "oc project fuse-prod"
+                sh "oc get route uc1-fuse-composition -o template --template='{{ .spec.to.name }}'> route-target"
+                
+                    // Determine which is of green or blue is active
+                    def newTarget = getNewTarget()
+                    def currentTarget = getCurrentTarget()
+                    
+                     // Trigger a new deployment
+                        openshiftDeploy deploymentConfig: "${newTarget}", namespace: 'fuse-prod'
+                        openshiftVerifyDeployment deploymentConfig: "${newTarget}", namespace: 'fuse-prod'
+
+                    
+                    input "Switch Production from ${currentTarget} to ${newTarget} ?"
+                    sh "oc patch route/uc1-fuse-composition --patch '{\"spec\":{\"to\":{\"name\":\"${newTarget}\"}}}'"
+
+            }
+            
+          }
+          
+          
+          // Get the current target of the OpenShift production route
+// Note: the route-target file is created earlier by the "oc get route" command
+def getCurrentTarget() {
+  def currentTarget = readFile 'route-target'
+  return currentTarget
+}
+
+// Flip/flop target (green goes blue and vice versa)
+def getNewTarget() {
+  def currentTarget = getCurrentTarget()
+  def newTarget = ""
+  if (currentTarget == "uc1-fuse-composition-blue") {
+      newTarget = "uc1-fuse-composition-green"
+  } else if (currentTarget == "uc1-fuse-composition-green") {
+      newTarget = "uc1-fuse-composition-blue"
+  } else {
+    echo "OOPS, wrong target"
+  }
+  return newTarget
+}
+

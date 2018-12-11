@@ -1,0 +1,55 @@
+---
+swagger: "2.0"
+info:
+  title: customer
+  version: 1.0.0
+paths:
+  /customer:
+    get:
+      operationId: getCustomer
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: Customer response ok
+          schema:
+            $ref: '#/definitions/customer'
+          examples:
+            application/json: |-
+              {
+                "id": "pwaldera7@seattletimes.com",
+                "name": "Phylis Waldera",
+                "age": 62,
+                "address": "01079 Mayfield Avenue",
+                "status": "diamond"
+              }
+definitions:
+  customer:
+    title: Root Type for customer
+    description: The root of the customer type's schema.
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      age:
+        format: int32
+        type: integer
+      address:
+        type: string
+      status:
+        type: string
+    example: |-
+      {
+        "id": "jdoe@jdmail.com",
+        "name": "John Doe",
+        "age": 67,
+        "address": "89 Everett Hill",
+        "status": "gold"
+      }
