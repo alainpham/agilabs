@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- #%L Wildfly Camel %% Copyright (C) 2013 - 2015 RedHat %% Licensed under 
+	the Apache License, Version 2.0 (the "License"); you may not use this file 
+	except in compliance with the License. You may obtain a copy of the License 
+	at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable 
+	law or agreed to in writing, software distributed under the License is distributed 
+	on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+	express or implied. See the License for the specific language governing permissions 
+	and limitations under the License. #L% -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+	
+	                          http://www.springframework.org/schema/jee
+                           http://www.springframework.org/schema/jee/spring-jee.xsd
+	">
+
+
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		id="propertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName"
+			value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="searchSystemEnvironment" value="true" />
+	</bean>
+	<bean class="org.apache.camel.component.servlet.ServletComponent"
+		id="servlet">
+		<property name="servletName"
+			value="CamelServlet-lab11-sftp-filepolling-eap" />
+	</bean>
+
+
+	<jee:jndi-lookup id="transactionManager"
+		jndi-name="java:/TransactionManager" />
+
+	<bean id="jtaTransactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> </bean> -->
+
+	<!-- ########################################################### -->
+	<!-- Database configs -->
+	<!-- ########################################################### -->
+	<bean class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close" id="dataSource">
+		<property name="driverClassName" value="${dbDriver}" />
+		<property name="url" value="${dbUrl}" />
+		<property name="username" value="${dbUser}" />
+		<property name="password" value="${dbPwd}" />
+	</bean>
+
+	<!-- <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="${dbDriver}" /> <property name="url" 
+		value="${dbUrl}" /> <property name="username" value="${dbUser}" /> <property 
+		name="password" value="${dbPwd}" /> </bean> -->
+
+	<bean class="org.apache.camel.component.sql.SqlComponent" id="sql">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="messageIdRepository"
+		class="org.apache.camel.processor.idempotent.jdbc.JdbcMessageIdRepository">
+		<constructor-arg ref="dataSource" />
+		<constructor-arg value="filepoller" />
+	</bean>
+
+	<bean class="agilabs.CommandeProcessor" id="commandeProcessor"></bean>
+	<camelContext id="lab11-sftp-filepolling-eap"
+		xmlns="http://camel.apache.org/schema/spring">
+		<packageScan>
+			<package>agilabs</package>
+		</packageScan>
+		<rest bindingMode="off" id="restsvc" path="/restsvc"
+			produces="application/json">
+			<get id="getPing" uri="/ping">
+				<route id="getPingRoute">
+					<setBody>
+						<constant>{"msg" : "ok"}</constant>
+					</setBody>
+				</route>
+			</get>
+		</rest>
+		<route id="basicRoute">
+			<from id="basicRouteStarter" uri="direct:start" />
+			<transform id="_transform1">
+				<simple>Hello ${body}</simple>
+			</transform>
+			<log id="_log1" message="${body}" />
+		</route>
+
+		<route>
+	 <from uri="sftp:localhost:22/files?knownHostsFile=/home/apham/.ssh/known_hosts&amp;username=apham&amp;privateKeyFile=/home/apham/.ssh/id_rsa&amp;idempotent=true&amp;idempotentRepository=#messageIdRepository&amp;sortBy=ignoreCase:file:name&amp;move=./done&amp;moveFailed=./failed&amp;include=.*csv" 
+				/> 
+			<!-- <from
+				uri="sftp:localhost:22/files?knownHostsFile=/home/apham/.ssh/known_hosts&amp;username=apham&amp;privateKeyFile=/home/apham/.ssh/id_rsa&amp;sortBy=ignoreCase:file:name&amp;move=./done&amp;moveFailed=./failed&amp;include=.*csv" />
+ -->			<transacted />
+			<log message="${body.class} ${file:name}" />
+			<unmarshal>
+				<bindy classType="agilabs.Commande" type="Csv" />
+			</unmarshal>
+			<process ref="commandeProcessor" />
+			<to
+				uri="sql:classpath:sql/insert.sql?batch=true" />
+			<log message="${headers}"></log>
+
+		</route>
+
+
+	</camelContext>
+</beans>

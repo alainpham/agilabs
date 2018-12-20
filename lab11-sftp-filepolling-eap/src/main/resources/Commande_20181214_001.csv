@@ -1,0 +1,4 @@
+commandeId|statutCommande|Datelivraison|Fournisseur|LigneCommande.CodeArcticle|LigneCommande.NomArticle|LigneCommande.Quantite|LigneCommande.PrixUnitaire|LigneCommande.Remise|NumeroSequence
+PO_001|Clos|14/12/2018|Sony|PS-4-SLIM|PS4 500 GO Slim|1|299|10|001
+PO_001|Clos|14/12/2018|Sony|PS-4-Manette|Manette PS4|1|50|10|001
+PO_002|En Cours|24/12/2018|Amazon|REF_FIFA_GAME_001|Fifa 19|1|50|0|001
