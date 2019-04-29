@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+
+    <camelContext id="lab13-cdc-jpa-triggers-postgresql" xmlns="http://camel.apache.org/schema/spring">
+
+		<rest id="restsvc"  path="/restsvc">
+			<get id="get-ping" uri="/ping">
+				<route id="get-pring-route">
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+		</rest>
+
+        <route id="http-receiver">
+            <from id="http-receiver-starter" uri="servlet://ping" />
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody>
+                <constant>{"msg" : "HELLO"}</constant>
+            </setBody>
+        </route>
+
+
+		<route id="consume-data-change">
+			<from id="consume-data-change-starter"
+				uri="jpa:agilabs.model.ConfigurationAudit" />
+            <marshal>
+                <json library="Jackson"/>
+            </marshal>
+			<log message="Data Change : ${body}"></log>
+		</route>
+
+    </camelContext>
+
+</beans>

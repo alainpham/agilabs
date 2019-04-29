@@ -53,17 +53,8 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/com/netflix/hystrix/hystrix-serialization/1.5.12/hystrix-serialization-1.5.12.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/fasterxml/jackson/module/jackson-module-afterburner/2.8.11/jackson-module-afterburner-2.8.11.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-sql/2.21.0.fuse-710018-redhat-00001/camel-sql-2.21.0.fuse-710018-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-dbcp/commons-dbcp/1.4-redhat-2/commons-dbcp-1.4-redhat-2.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-pool/commons-pool/1.6.0.redhat-10/commons-pool-1.6.0.redhat-10.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/postgresql/postgresql/42.2.2.redhat-2/postgresql-42.2.2.redhat-2.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-ftp/2.21.0.fuse-710018-redhat-00001/camel-ftp-2.21.0.fuse-710018-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-net/commons-net/3.6/commons-net-3.6.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-beanutils/commons-beanutils/1.9.3.redhat-1/commons-beanutils-1.9.3.redhat-1.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-collections/commons-collections/3.2.2.redhat-2/commons-collections-3.2.2.redhat-2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-jdbc/4.3.17.RELEASE/spring-jdbc-4.3.17.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-beans/4.3.17.RELEASE/spring-beans-4.3.17.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-core/4.3.17.RELEASE/spring-core-4.3.17.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-tx/4.3.17.RELEASE/spring-tx-4.3.17.RELEASE.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-bindy/2.21.0.fuse-710018-redhat-00001/camel-bindy-2.21.0.fuse-710018-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

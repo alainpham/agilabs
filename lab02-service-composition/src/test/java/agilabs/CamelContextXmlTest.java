@@ -72,7 +72,7 @@ public class CamelContextXmlTest  {
 		context.getRouteDefinition("getCustomerWithCBRoute").adviceWith(context, interceptOutput);
 		
 		// Define some expectations
-		outputEndpoint.expectedBodiesReceived("gold");
+		outputEndpoint.expectedBodiesReceived("diamond");
 		//Run the test
 		Object result =  inputEndpoint.requestBodyAndHeader(null, "id", input);
 		System.out.println(result);
