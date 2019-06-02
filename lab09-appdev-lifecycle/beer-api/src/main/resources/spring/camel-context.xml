@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:cxf="http://camel.apache.org/schema/cxf" xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+    
+    <camelContext id="beer-api" xmlns="http://camel.apache.org/schema/spring">
+        
+        <rest>
+            <get id="GetBeer" uri="/beer/{name}" outType="restsvc.model.Beer">
+                <description>Get beer having name</description>
+                <param dataType="string" description="Name of beer to retrieve" name="name" required="true" type="path" />
+                <to uri="direct:GetBeer" />
+            </get>
+            <get id="FindBeersByStatus" uri="/beer/findByStatus/{status}" outType="restsvc.model.Beer">
+                <description>Get beers having status</description>
+                <param dataType="string" description="Status of beers to retrieve" name="status" required="true" type="path" />
+                <param dataType="number" description="Number of page to retrieve" name="page" required="false" type="query" />
+                <to uri="direct:FindBeersByStatus" />
+            </get>
+            <get id="ListBeers" uri="/beer">
+                <description>List beers within catalog</description>
+                <param dataType="number" description="Number of page to retrieve" name="page" required="false" type="query" />
+                <to uri="direct:ListBeers" />
+            </get>
+        </rest>
+        
+        <route>
+            <from uri="direct:GetBeer" />
+            <log message="${header.name}" />
+            <setBody>
+                <method ref="beerRepository" method="findByName(${headers.name})" />
+            </setBody>
+        </route>
+        <route>
+            <from uri="direct:FindBeersByStatus" />
+            <setBody>
+                <method ref="beerRepository" method="findByStatus(${header.status})" />
+            </setBody>
+        </route>
+        <route>
+            <from uri="direct:ListBeers" />
+            <setBody>
+                <method ref="beerRepository" method="getBeers" />
+            </setBody>
+        </route>
+        
+        <route id="route-for-unimplemented-operations">
+            <from id="from-for-unimplemented-operations-route" uri="direct:501" />
+            <log id="log-for-unimplemented-operations-route" message="API operation not yet implemented: ${headers.CamelHttpMethod} ${headers.CamelHttpPath}" />
+            <setHeader id="setHeader-for-unimplemented-operations-route" headerName="Exchange.HTTP_RESPONSE_CODE">
+                <constant>501</constant>
+            </setHeader>
+            <setBody id="setBody-for-unimplemented-operations-route">
+                <simple>API operation not implemented: ${headers.CamelHttpMethod} ${headers.CamelHttpPath}</simple>
+            </setBody>
+        </route>
+        
+    </camelContext>
+    
+</beans>
