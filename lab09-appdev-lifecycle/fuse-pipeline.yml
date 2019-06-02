@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: fuse pipeline - build deploy dev and promote to prod
+    iconClass: icon-jenkins
+    version: '2.0'
+  name: fuse-pipeline
+labels:
+  template: fuse-pipeline
+  app: fuse-pipeline
+parameters:
+- name: APPLICATION_NAME
+  displayName: Application Name
+  required: true
+  value: uc1-fuse-composition
+- name: DEV_NS
+  displayName: Development Project Name Space
+  required: true
+  value: fuse-test
+- name: PROD_NS
+  displayName: Production Project Name Space
+  required: true
+  value: fuse-prod
+objects:
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    annotations:
+      pipeline.alpha.openshift.io/uses: '[{"name": "${APPLICATION_NAME}-pipeline", "kind": "DeploymentConfig"}]'
+    labels:
+      name: ${APPLICATION_NAME}-pipeline
+      template: ${APPLICATION_NAME}-pipeline
+    name: ${APPLICATION_NAME}-pipeline
+  spec:
+    nodeSelector: null
+    output: {}
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      type: None
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfile: |
+          node() {
+            env.devns = "${DEV_NS}";
+            env.prodns = "${PROD_NS}";
+            env.appname = "${APPLICATION_NAME}";
+            stage('build') {
+              print 'building projects'
+
+              openshiftBuild(namespace: "${env.devns}",
+                  buildConfig: "${env.appname}", showBuildLogs: "true")
+            }
+            stage ('promotionCheck'){
+              def userInput = input( id: "userInput", message: "Promote to PROD?", parameters:
+                [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
+              print 'promotionCheck'
+
+              openshiftTag(namespace: "${env.devns}",
+                       sourceStream: "${env.appname}",  sourceTag: "latest", destinationNamespace:
+                       "${env.prodns}", destinationStream: "${env.appname}", destinationTag:
+                       "prod")
+            }
+          }
+      type: JenkinsPipeline
