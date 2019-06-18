@@ -28,7 +28,6 @@
                     </setBody>
                 </otherwise>
             </choice>
-            <log id="_log1" message="${body}"/>
         </route>
     </camelContext>
 </beans>

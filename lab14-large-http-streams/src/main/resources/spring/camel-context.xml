@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+
+    <camelContext id="lab14-large-http-streams" xmlns="http://camel.apache.org/schema/spring">
+
+		<rest id="restsvc"  path="/restsvc">
+			<get id="get-ping" uri="/ping">
+				<route id="get-pring-route">
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+		</rest>
+
+
+
+		<route id="csvStream">
+			<from id="csvStreamStarter" uri="servlet:csv?disableStreamCache=true" />
+			<log id="logStreamClass2" message="Handling a stream of class : ${body.class}" />
+			<setHeader headerName="start">
+				<method beanType="java.lang.System" method="currentTimeMillis()" />
+			</setHeader>
+			<split streaming="true" shareUnitOfWork="true">
+				<tokenize token="\n"></tokenize>
+				<sample samplePeriod="1">
+					<unmarshal>
+						<bindy type="Csv" classType="com.redhat.pocs.model.WireTransfer" />
+					</unmarshal>
+					<log message="#########################################"></log>
+					<log message="SAMPLING DATA EVERY 1 SEC ..."></log>
+					<log message="Number of lines processed : ${property.CamelSplitIndex}"></log>
+					<log message="paymentDate : ${body.paymentDate}"></log>
+					<log message="sendersName : ${body.sendersName}"></log>
+				</sample>
+			</split>
+			<setHeader headerName="end">
+				<method beanType="java.lang.System" method="currentTimeMillis()" />
+			</setHeader>
+			<process ref="diffCalcProcessor" />
+			<log message="#########################################"></log>
+			<log message="FINISHED PROCESSING"></log>
+			<log message="Speed MB/s: ${headers.speed}"></log>
+			<log message="Total File Size Bytes: ${headers.Content-Length}"></log>
+			<log message="Speed total time: ${headers.time}"></log>
+            <setBody><constant>ok</constant></setBody>
+
+		</route>
+
+
+		<route id="xmlStream">
+			<from uri="servlet:xml?disableStreamCache=true" />
+			<setHeader headerName="start">
+				<method beanType="java.lang.System" method="currentTimeMillis()" />
+			</setHeader>
+<!-- 			<setBody>
+				<method beanType="com.util.FileUtils" method="getFile()" />
+			</setBody> -->
+			<log message="Handling a stream of class : ${body.class}" />
+			<split streaming="true" shareUnitOfWork="true"
+				strategyMethodAllowNull="false">
+				<xtokenize>/root/WireTransferMT103</xtokenize>
+				<sample samplePeriod="1">
+					<log message="#########################################"></log>
+					<log message="SAMPLING DATA EVERY 1 SEC ..."></log>
+					<log message="Number of lines processed : ${property.CamelSplitIndex}"></log>
+					<log message="DATA : ${body}"></log>
+				</sample>
+			</split>
+			<setHeader headerName="end">
+				<method beanType="java.lang.System" method="currentTimeMillis()" />
+			</setHeader>
+			<process ref="diffCalcProcessor" />
+			<log message="#########################################"></log>
+			<log message="FINISHED PROCESSING"></log>
+			<log message="Speed MB/s: ${headers.speed}"></log>
+			<log message="Total File Size Bytes: ${headers.Content-Length}"></log>
+			<log message="Speed total time: ${headers.time}"></log>
+            <setBody><constant>ok</constant></setBody>
+		</route>
+    </camelContext>
+
+</beans>

@@ -11,13 +11,13 @@
 	<name>lab01-basic-service</name>
 	<description>lab01-basic-service</description>
 	<properties>
-		<fuse.version>7.1.0.fuse-710019-redhat-00002</fuse.version>
-
-		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-		<swagger.ui.version>2.1.0</swagger.ui.version>
-		<swagger.codegen.version>2.3.1</swagger.codegen.version>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fuse.version>7.3.0.fuse-730058-redhat-00001</fuse.version>
+		<version.org.apache.camel>2.21.0.fuse-730078-redhat-00001</version.org.apache.camel>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <swagger.ui.version>3.22.2</swagger.ui.version>
+        <swagger.codegen.version>2.3.1</swagger.codegen.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 	</properties>
 	<dependencyManagement>
