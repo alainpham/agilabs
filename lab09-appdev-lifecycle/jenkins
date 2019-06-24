@@ -3,8 +3,9 @@ def mvn = "mvn -s mvn-settings.xml"
             /*env.devns = "${DEV_NS}";
             /env.prodns = "${PROD_NS}";
             env.appname = "${APPLICATION_NAME}";*/
-            env.nexusMirror = "http://172.17.0.1:5081/repository/maven-public/";
-
+            env.nexusMirror = "http://nexus.devops.svc:8081/nexus/content/groups/public/";
+            env.source = "apps";
+            env.target = "apps-prod";
             stage('checkoutSource') {
               git url: "https://github.com/alainpham/agilabs.git"
               
@@ -26,7 +27,7 @@ def mvn = "mvn -s mvn-settings.xml"
             }
             stage('build') {
               print 'building projects'
-              sh "cd lab09-appdev-lifecycle/beer-api && oc project fuse && ${mvn} -P ocp -DskipTests fabric8:deploy"
+              sh "oc project apps && ${mvn} -f lab09-appdev-lifecycle/beer-api/pom.xml -P ocp -DskipTests fabric8:deploy"
             }
             stage ('promotionCheck'){
               def userInput = input( id: "userInput", message: "Promote to PROD?", parameters:
@@ -35,11 +36,11 @@ def mvn = "mvn -s mvn-settings.xml"
             }
             stage('tagForProd'){
                 openshiftTag alias: 'false', destStream: 'beer-api', srcTag: "latest",
-                 destinationNamespace: 'fuse-prod', namespace: 'fuse',
+                 destinationNamespace: 'apps-prod', namespace: 'apps',
                  srcStream: 'beer-api', destTag: 'ready-for-prod', verbose: 'false'
             }
             stage('deployOnNewTarget'){
-                sh "oc project fuse-prod"
+                sh "oc project apps-prod"
                 sh "oc get route beer-api -o template --template='{{ .spec.to.name }}'> route-target"
                 
                     // Determine which is of green or blue is active
@@ -47,8 +48,8 @@ def mvn = "mvn -s mvn-settings.xml"
                     def currentTarget = getCurrentTarget()
                     
                      // Trigger a new deployment
-                        openshiftDeploy deploymentConfig: "${newTarget}", namespace: 'fuse-prod'
-                        openshiftVerifyDeployment deploymentConfig: "${newTarget}", namespace: 'fuse-prod'
+                        openshiftDeploy deploymentConfig: "${newTarget}", namespace: 'apps-prod'
+                        openshiftVerifyDeployment deploymentConfig: "${newTarget}", namespace: 'apps-prod'
 
                     
                     input "Switch Production from ${currentTarget} to ${newTarget} ?"

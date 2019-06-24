@@ -1,63 +1,63 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:cxf="http://camel.apache.org/schema/cxf" xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
-       ">
-    
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
     <camelContext id="beer-api" xmlns="http://camel.apache.org/schema/spring">
-        
-        <rest>
-            <get id="GetBeer" uri="/beer/{name}" outType="restsvc.model.Beer">
+        <rest id="rest-42b4a050-05eb-4dbe-b9a8-7cc06a33a3fd">
+            <get id="GetBeer" outType="restsvc.model.Beer" uri="/beer/{name}">
                 <description>Get beer having name</description>
-                <param dataType="string" description="Name of beer to retrieve" name="name" required="true" type="path" />
-                <to uri="direct:GetBeer" />
+                <param dataType="string"
+                    description="Name of beer to retrieve" name="name"
+                    required="true" type="path"/>
+                <to uri="direct:GetBeer"/>
             </get>
-            <get id="FindBeersByStatus" uri="/beer/findByStatus/{status}" outType="restsvc.model.Beer">
+            <get id="FindBeersByStatus" outType="restsvc.model.Beer" uri="/beer/findByStatus/{status}">
                 <description>Get beers having status</description>
-                <param dataType="string" description="Status of beers to retrieve" name="status" required="true" type="path" />
-                <param dataType="number" description="Number of page to retrieve" name="page" required="false" type="query" />
-                <to uri="direct:FindBeersByStatus" />
+                <param dataType="string"
+                    description="Status of beers to retrieve"
+                    name="status" required="true" type="path"/>
+                <param dataType="number"
+                    description="Number of page to retrieve" name="page"
+                    required="false" type="query"/>
+                <to uri="direct:FindBeersByStatus"/>
             </get>
             <get id="ListBeers" uri="/beer">
                 <description>List beers within catalog</description>
-                <param dataType="number" description="Number of page to retrieve" name="page" required="false" type="query" />
-                <to uri="direct:ListBeers" />
+                <param dataType="number"
+                    description="Number of page to retrieve" name="page"
+                    required="false" type="query"/>
+                <to uri="direct:ListBeers"/>
             </get>
         </rest>
-        
-        <route>
-            <from uri="direct:GetBeer" />
-            <log message="${header.name}" />
-            <setBody>
-                <method ref="beerRepository" method="findByName(${headers.name})" />
+        <route id="_route1">
+            <from id="_from1" uri="direct:GetBeer"/>
+            <log id="_log1" message="${header.name}"/>
+            <setBody id="_setBody1">
+                <method method="findByName(${headers.name})" ref="beerRepository"/>
             </setBody>
         </route>
-        <route>
-            <from uri="direct:FindBeersByStatus" />
-            <setBody>
-                <method ref="beerRepository" method="findByStatus(${header.status})" />
+        <route id="_route2">
+            <from id="_from2" uri="direct:FindBeersByStatus"/>
+            <setBody id="_setBody2">
+                <method method="findByStatus(${header.status})" ref="beerRepository"/>
             </setBody>
         </route>
-        <route>
-            <from uri="direct:ListBeers" />
-            <setBody>
-                <method ref="beerRepository" method="getBeers" />
+        <route id="_route3">
+            <from id="_from3" uri="direct:ListBeers"/>
+            <setBody id="_setBody3">
+                <method method="getBeers" ref="beerRepository"/>
             </setBody>
         </route>
-        
         <route id="route-for-unimplemented-operations">
-            <from id="from-for-unimplemented-operations-route" uri="direct:501" />
-            <log id="log-for-unimplemented-operations-route" message="API operation not yet implemented: ${headers.CamelHttpMethod} ${headers.CamelHttpPath}" />
-            <setHeader id="setHeader-for-unimplemented-operations-route" headerName="Exchange.HTTP_RESPONSE_CODE">
+            <from id="from-for-unimplemented-operations-route" uri="direct:501"/>
+            <log id="log-for-unimplemented-operations-route" message="API operation not yet implemented: ${headers.CamelHttpMethod} ${headers.CamelHttpPath}"/>
+            <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="setHeader-for-unimplemented-operations-route">
                 <constant>501</constant>
             </setHeader>
             <setBody id="setBody-for-unimplemented-operations-route">
                 <simple>API operation not implemented: ${headers.CamelHttpMethod} ${headers.CamelHttpPath}</simple>
             </setBody>
         </route>
-        
     </camelContext>
-    
 </beans>

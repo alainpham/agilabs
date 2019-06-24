@@ -19,7 +19,7 @@
                 <when id="_when1">
                     <xpath>/msg = 'random'</xpath>
                     <setBody id="_setBody1">
-                        <simple>random(0,10)</simple>
+                        <simple>random(0,20)</simple>
                     </setBody>
                 </when>
                 <otherwise id="_otherwise1">
@@ -28,6 +28,7 @@
                     </setBody>
                 </otherwise>
             </choice>
+            <log id="_log1" message="[${header.test}]"/>
         </route>
     </camelContext>
 </beans>
