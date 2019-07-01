@@ -101,6 +101,8 @@ We are going to install the cluster operator in the project named `amq-streams-u
 ```
 SUFFIX=userXX
 AMQSTREAMSPROJECT=amq-streams-$SUFFIX
+
+echo $AMQSTREAMSPROJECT
 ```
 
 Create a new project in Openshift.
@@ -118,9 +120,11 @@ sed -i "s/namespace: .*/namespace: $AMQSTREAMSPROJECT/" install/cluster-operator
 We are now replacing ClusterRoleBinding names as we want eventually to deploy several cluster operators within a single OCP instance.
 
 ```
-sed -i -E "0,/name:.*/s/(name:.*)/\1-$SUFFIX/" install/cluster-operator/*ClusterRoleBinding*.yaml
-```
+sed -i -E "0,/name:.*/s/(name: strimzi-cluster-operator)(.*)/\1-$SUFFIX/" install/cluster-operator/021-ClusterRoleBinding*.yaml
 
+sed -i -E "0,/name:.*/s/(name: strimzi-cluster-operator-kafka-broker-delegation)(.*)/\1-$SUFFIX/" install/cluster-operator/030-ClusterRoleBinding*.yaml
+
+```
 
 (Next step is optional : Alternative if images are already in the local registry and avoid repulling)
 ```
@@ -142,17 +146,28 @@ Then run the following command to create it
 ```
 oc apply -f examples/kafka/kafka-persistent.yaml
 ```
+Observe the create of different components in this order:
+- Zookeeper cluster
+- Kafka cluster
+- Entity Operator to manage topics and users
 
-Run a consumer
+
+To test everything run a consumer:
 
 ```
-oc run kafka-consumer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap.$AMQSTREAMSPROJECT.svc:9092 --topic my-topic --from-beginning
+reg=registry.redhat.io/amq7
+#reg=docker-registry.default.svc:5000/openshift
+
+oc run kafka-consumer -ti --image=$reg/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
 Run a producer
 
 ```
-oc run kafka-producer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap.$AMQSTREAMSPROJECT.svc:9092 --topic my-topic
+reg=registry.redhat.io/amq7
+#reg=docker-registry.default.svc:5000/openshift
+
+oc run kafka-producer -ti --image=$reg/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 Now let's send some ascii Art :)
