@@ -10,9 +10,14 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
     - [Topic Operator](#Topic-Operator)
     - [User Operator](#User-Operator)
   - [Lab 01 - Install and deploy AMQ Streams Kafka Clusters](#Lab-01---Install-and-deploy-AMQ-Streams-Kafka-Clusters)
+    - [Cluster Management](#Cluster-Management)
+    - [Testing environment](#Testing-environment)
+    - [Topic Management](#Topic-Management)
   - [Lab 02 -Secure Broker/Client communications](#Lab-02--Secure-BrokerClient-communications)
+    - [Access broker from outside the cluster](#Access-broker-from-outside-the-cluster)
   - [Lab 03 -Resiliency with Mirror Maker](#Lab-03--Resiliency-with-Mirror-Maker)
   - [Lab 04 - Monitoring Kafka Clusters](#Lab-04---Monitoring-Kafka-Clusters)
+  - [Deleting stuff (Instructor only)](#Deleting-stuff-Instructor-only)
 
 ## Prerequisites
 
@@ -95,6 +100,7 @@ Unzip the downloaded script package
 ```
 unzip amq-streams-1.1.0-ocp-install-examples.zip
 ```
+### Cluster Management
 
 We are going to install the cluster operator in the project named `amq-streams-userXX`. Set the environment variable to your name for the lab.
 
@@ -137,6 +143,7 @@ Now install the cluster operator into your project. Next step creates all the CR
 ```
 oc apply -f install/cluster-operator -n $AMQSTREAMSPROJECT
 oc apply -f examples/templates/cluster-operator -n $AMQSTREAMSPROJECT
+oc apply -f examples/templates/topic-operator  -n $AMQSTREAMSPROJECT
 ```
 
 Deploy a cluster by creating a Kafka CRD. 
@@ -151,6 +158,7 @@ Observe the create of different components in this order:
 - Kafka cluster
 - Entity Operator to manage topics and users
 
+### Testing environment
 
 To test everything run a consumer:
 
@@ -186,15 +194,148 @@ Now let's send some ascii Art :)
     (__/
 ```
 
+Play around with increasing and decreasing number of instances.
 
+### Topic Management
+
+Create a topic using the template and enter the following values. Check in Resources->Other Resources-> Kafka Topic. To see the new definition
+
+```
+Name of the Kafka cluster
+my-cluster
+
+Name of the topic
+lines
+
+Number of partitions
+2
+
+Number of replicas
+2
+
+Topic config
+{ "retention.ms":"7200000" ,"segment.bytes": "1073741824"}
+```
+
+(Alternatively per command line)
+
+```
+oc apply -f lines-topic.yml
+```
+(end of alternative)
+
+Check if the topic config.
+
+```
+oc rsh my-cluster-kafka-0
+bin/kafka-topics.sh --zookeeper localhost:2181 --topic lines --describe
+exit
+```
+
+Expected result
+
+```
+Topic:lines     PartitionCount:2        ReplicationFactor:2     Configs:segment.bytes=1073741824,message.format.version=2.1-IV2,retention.ms=7200000
+        Topic: lines    Partition: 0    Leader: 0       Replicas: 0,1   Isr: 0,1
+        Topic: lines    Partition: 1    Leader: 1       Replicas: 1,2   Isr: 1,2
+```
+
+Let's increase the number of partitions to 10 
+```
+oc apply -f lines-topic-scaled.yml
+```
+
+```
+oc rsh my-cluster-kafka-0
+bin/kafka-topics.sh --zookeeper localhost:2181 --topic lines --describe
+exit
+```
+
+Expected results
+
+```
+Topic:lines     PartitionCount:10       ReplicationFactor:2     Configs:segment.bytes=1073741824,message.format.version=2.1-IV2,retention.ms=7200000
+        Topic: lines    Partition: 0    Leader: 0       Replicas: 0,1   Isr: 0,1
+        Topic: lines    Partition: 1    Leader: 1       Replicas: 1,2   Isr: 1,2
+        Topic: lines    Partition: 2    Leader: 2       Replicas: 2,0   Isr: 2,0
+        Topic: lines    Partition: 3    Leader: 0       Replicas: 0,2   Isr: 0,2
+        Topic: lines    Partition: 4    Leader: 1       Replicas: 1,0   Isr: 1,0
+        Topic: lines    Partition: 5    Leader: 2       Replicas: 2,1   Isr: 2,1
+        Topic: lines    Partition: 6    Leader: 0       Replicas: 0,1   Isr: 0,1
+        Topic: lines    Partition: 7    Leader: 1       Replicas: 1,2   Isr: 1,2
+        Topic: lines    Partition: 8    Leader: 2       Replicas: 2,0   Isr: 2,0
+        Topic: lines    Partition: 9    Leader: 0       Replicas: 0,2   Isr: 0,2
+```
 
 ## Lab 02 -Secure Broker/Client communications
 
+### Access broker from outside the cluster
 
+To access the broker from the outside you need to setup a secure tls communication between the client and the broker.
+
+Add external route to the my-cluster Kafka Resource
+
+```
+    listeners:
+      external:
+        type: route
+      plain: {}
+      tls: {}
+```
+
+Watch the modifications roll out.
+
+Extract secrets and import into a trust store to trust the broker public key.
+
+```
+oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
+
+keytool -importcert -keystore execs/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/config/certificate.crt -noprompt
+```
+
+Get the route of your cluster
+
+```
+oc get route my-cluster-kafka-bootstrap -o 'jsonpath={.spec.host}'
+```
+
+Configure it in the file `execs/config/application.properties`
+
+Run the consumer. FYI, this an app built with Quarkus (Java app compiled to native executable)
+
+```
+cd execs ; ./quarkus-kafka-consumer-1.0-SNAPSHOT-runner ; cd -
+```
 
 ## Lab 03 -Resiliency with Mirror Maker
 
 
 
 ## Lab 04 - Monitoring Kafka Clusters
+
+
+## Deleting stuff (Instructor only)
+
+```
+
+for i in {01..02}
+do
+
+SUFFIX=user$i
+AMQSTREAMSPROJECT=amq-streams-$SUFFIX
+
+oc delete kafka my-cluster -n amq-streams-user0$i -n $AMQSTREAMSPROJECT
+oc delete clusterrolebinding strimzi-cluster-operator-$SUFFIX -n $AMQSTREAMSPROJECT
+oc delete clusterrolebinding strimzi-cluster-operator-kafka-broker-delegation-$SUFFIX -n $AMQSTREAMSPROJECT
+oc delete project $AMQSTREAMSPROJECT
+done
+
+echo "deleting ClusterRoles"
+oc delete -f install/cluster-operator/*ClusterRole-*
+
+echo "deleting CRDs"
+oc delete -f install/cluster-operator/*Crd*
+
+```
+
 
