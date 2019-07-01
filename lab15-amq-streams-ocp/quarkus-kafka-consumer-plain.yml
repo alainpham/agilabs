@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: quarkus-kafka-consumer-plain
+  labels:
+    app:  quarkus-kafka-client
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  quarkus-kafka-client
+        name:  quarkus-kafka-consumer-plain
+    spec:
+      containers:
+        - name: quarkus-kafka-consumer-plain
+          image: quay.io/alainpham/quarkus-kafka-consumer:latest
+          env:
+            - name: MP_MESSAGING_INCOMING_EVENTS_TOPIC
+              value: my-topic
+            - name: MP_MESSAGING_INCOMING_EVENTS_BOOTSTRAP_SERVERS
+              value: "my-cluster-kafka-bootstrap:9092"
