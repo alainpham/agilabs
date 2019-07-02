@@ -1,14 +1,3 @@
-**/target/
-**/.project
-**/.settings
-**/.classpath
-**/*.jar
-**/*.log
-**/.vscode
-**/*.iml
-**/.idea
-**/log-camel-lsp.out
-
 **/amq-streams-1.1.0-ocp-install-examples.zip
 **/install
 **/examples

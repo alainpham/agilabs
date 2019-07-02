@@ -15,6 +15,7 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
     - [Topic Management](#Topic-Management)
   - [Lab 02 -Secure Broker/Client communications](#Lab-02--Secure-BrokerClient-communications)
     - [Access broker from outside the cluster](#Access-broker-from-outside-the-cluster)
+    - [Activate authentication and authorization on the broker](#Activate-authentication-and-authorization-on-the-broker)
   - [Lab 03 -Resiliency with Mirror Maker](#Lab-03--Resiliency-with-Mirror-Maker)
   - [Lab 04 - Monitoring Kafka Clusters](#Lab-04---Monitoring-Kafka-Clusters)
   - [Deleting stuff (Instructor only)](#Deleting-stuff-Instructor-only)
@@ -283,6 +284,12 @@ Add external route to the my-cluster Kafka Resource
       tls: {}
 ```
 
+Or do it by command
+
+```
+oc apply -f kafka-persistent-external.yaml
+```
+
 Watch the modifications roll out.
 
 Extract secrets and import into a trust store to trust the broker public key.
@@ -305,6 +312,30 @@ Run the consumer. FYI, this an app built with Quarkus (Java app compiled to nati
 
 ```
 cd execs ; ./quarkus-kafka-consumer-1.0-SNAPSHOT-runner ; cd -
+```
+
+### Activate authentication and authorization on the broker
+
+Edit the Kafka Resource of my-cluster
+
+```
+    listeners:
+      plain:
+        authentication:
+          type: scram-sha-512
+```
+
+or run the following command line
+
+```
+oc apply -f kafka-persistent-secure.yaml
+```
+
+Create related ACLs for readers and writers
+
+```
+oc apply -f secure-reader.yml
+oc apply -f secure-writer.yml
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker

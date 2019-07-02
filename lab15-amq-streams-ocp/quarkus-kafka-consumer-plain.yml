@@ -14,9 +14,11 @@ spec:
     spec:
       containers:
         - name: quarkus-kafka-consumer-plain
-          image: quay.io/alainpham/quarkus-kafka-consumer:latest
+          image: quay.io/alainpham/quarkus-kafka-consumer-jvm:latest
           env:
             - name: MP_MESSAGING_INCOMING_EVENTS_TOPIC
               value: my-topic
             - name: MP_MESSAGING_INCOMING_EVENTS_BOOTSTRAP_SERVERS
-              value: "my-cluster-kafka-bootstrap:9092"
+              value: my-cluster-kafka-bootstrap:9092
+            - name: MP_MESSAGING_INCOMING_EVENTS_SECURITY_PROTOCOL
+              value: PLAINTEXT
