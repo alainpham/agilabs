@@ -18,6 +18,10 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
     - [Activate authentication and authorization on the broker](#Activate-authentication-and-authorization-on-the-broker)
   - [Lab 03 -Resiliency with Mirror Maker](#Lab-03--Resiliency-with-Mirror-Maker)
   - [Lab 04 - Monitoring Kafka Clusters](#Lab-04---Monitoring-Kafka-Clusters)
+    - [Exposing kafka metrics](#Exposing-kafka-metrics)
+    - [Deploy prometheus](#Deploy-prometheus)
+    - [Deploy grafana](#Deploy-grafana)
+    - [Configure dashboard](#Configure-dashboard)
   - [Deleting stuff (Instructor only)](#Deleting-stuff-Instructor-only)
 
 ## Prerequisites
@@ -404,24 +408,55 @@ oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.
 
 ## Lab 04 - Monitoring Kafka Clusters
 
+### Exposing kafka metrics
 Expose metrics on the cluster
 
 ```
 oc apply -f kafka-persistent-metrics.yaml
 ```
 
-Deploy prometheus
+### Deploy prometheus
 
 ```
 sed -E "s/userXX/$SUFFIX/" prometheus.yaml | oc apply -f -
 oc expose svc prometheus
 ```
 
-Deploy grafana
+### Deploy grafana
 
 ```
 oc apply -f grafana.yaml
 oc expose svc grafana
+```
+
+### Configure dashboard
+
+Login to grafana with admin/admin. Get the URL with the following command
+
+```
+oc get route grafana -o 'jsonpath={.spec.host}'
+```
+
+Create the Prometheus datasource. Go to the `Gear' icon on the left and then pick Datasources.
+
+Choose Prometheus as data source type and then fill following values:
+
+```
+name: prometheus
+url: http://prometheus:9090
+```
+Save and test
+
+Now import the following dashboard for Kafka
+
+```
+https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.12.1/metrics/examples/grafana/strimzi-kafka.json
+```
+
+And similarly for Zookeeper
+
+```
+https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.12.1/metrics/examples/grafana/strimzi-zookeeper.json
 ```
 
 ## Deleting stuff (Instructor only)
