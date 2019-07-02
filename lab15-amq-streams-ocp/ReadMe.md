@@ -388,10 +388,27 @@ oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.
 
 ## Lab 03 -Resiliency with Mirror Maker
 
+Browse templates and create a mirror maker from one user to another
 
+Use full service dns names
+i.e. :
+```
+my-cluster-kafka-bootstrap.amq-streams-userXX.svc.cluster.local
+```
+
+Run a producer to test it out
+
+```
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+```
 
 ## Lab 04 - Monitoring Kafka Clusters
 
+Expose metrics on the cluster
+
+```
+oc apply -f kafka-persistent-metrics.yaml
+```
 
 ## Deleting stuff (Instructor only)
 
