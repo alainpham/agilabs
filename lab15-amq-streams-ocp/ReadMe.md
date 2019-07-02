@@ -290,7 +290,6 @@ Extract secrets and import into a trust store to trust the broker public key.
 
 ```
 oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
-
 keytool -importcert -keystore execs/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/config/certificate.crt -noprompt
 ```
 
