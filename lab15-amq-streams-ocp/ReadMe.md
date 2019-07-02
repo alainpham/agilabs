@@ -311,7 +311,7 @@ Configure it in the file `execs/config/application.properties`
 Run the consumer. FYI, this an app built with Quarkus (Java app compiled to native executable)
 
 ```
-cd execs ; ./quarkus-kafka-consumer-1.0-SNAPSHOT-runner ; cd -
+cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 ```
 
 ### Activate authentication and authorization on the broker
@@ -320,7 +320,7 @@ Edit the Kafka Resource of my-cluster
 
 ```
     listeners:
-      plain:
+      tls:
         authentication:
           type: scram-sha-512
 ```
@@ -336,6 +336,12 @@ Create related ACLs for readers and writers
 ```
 oc apply -f secure-reader.yml
 oc apply -f secure-writer.yml
+```
+
+Create a secure consumer
+
+```
+
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker

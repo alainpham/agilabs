@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: quarkus-kafka-consumer-plain
-          image: quay.io/alainpham/quarkus-kafka-consumer-jvm:latest
+          image: quay.io/alainpham/quarkus-kafka-consumer:latest
           env:
             - name: MP_MESSAGING_INCOMING_EVENTS_TOPIC
               value: my-topic
