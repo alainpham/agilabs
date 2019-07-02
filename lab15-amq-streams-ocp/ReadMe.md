@@ -413,7 +413,7 @@ oc apply -f kafka-persistent-metrics.yaml
 Deploy prometheus
 
 ```
-sed -E "s/userXX/user$SUFFIX/" prometheus.yaml | oc apply -f -
+sed -E "s/userXX/$SUFFIX/" prometheus.yaml | oc apply -f -
 ```
 
 ## Deleting stuff (Instructor only)
