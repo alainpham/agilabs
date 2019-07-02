@@ -421,7 +421,7 @@ Deploy grafana
 
 ```
 oc apply -f grafana.yaml
-oc expose grafana
+oc expose svc grafana
 ```
 
 ## Deleting stuff (Instructor only)
