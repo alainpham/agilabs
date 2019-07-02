@@ -338,10 +338,10 @@ oc apply -f secure-reader.yml
 oc apply -f secure-writer.yml
 ```
 
-Create a secure consumer
+Create a secure consumer. Check all the configs necessary in the yaml file.
 
 ```
-
+oc apply -f quarkus-kafka-consumer-secure.yml
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker
