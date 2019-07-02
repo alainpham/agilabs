@@ -355,7 +355,7 @@ oc apply -f quarkus-kafka-consumer-secure.yml
 
 ```
 
-for i in {01..02}
+for i in {1..2}
 do
 
 SUFFIX=user$i
