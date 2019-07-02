@@ -164,19 +164,13 @@ Observe the create of different components in this order:
 To test everything run a consumer:
 
 ```
-reg=registry.redhat.io/amq7
-#reg=docker-registry.default.svc:5000/openshift
-
-oc run kafka-consumer -ti --image=$reg/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
 Run a producer
 
 ```
-reg=registry.redhat.io/amq7
-#reg=docker-registry.default.svc:5000/openshift
-
-oc run kafka-producer -ti --image=$reg/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 Now let's send some ascii Art :)
