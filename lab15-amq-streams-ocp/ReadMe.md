@@ -414,6 +414,14 @@ Deploy prometheus
 
 ```
 sed -E "s/userXX/$SUFFIX/" prometheus.yaml | oc apply -f -
+oc expose svc prometheus
+```
+
+Deploy grafana
+
+```
+oc apply -f grafana.yaml
+oc expose grafana
 ```
 
 ## Deleting stuff (Instructor only)
