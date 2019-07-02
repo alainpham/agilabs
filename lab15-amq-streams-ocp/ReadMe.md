@@ -301,12 +301,25 @@ oc get route my-cluster-kafka-bootstrap -o 'jsonpath={.spec.host}'
 
 Configure it in the file `execs/config/application.properties`
 
+```
+vi execs/config/application.properties
+
+
+mp.messaging.incoming.events.bootstrap.servers=<YOUR_ROUTE>:443
+mp.messaging.incoming.events.security.protocol=SSL
+```
+
 Run the consumer. FYI, this an app built with Quarkus (Java app compiled to native executable)
 
 ```
 cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 ```
 
+Run a producer to test it
+
+```
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+```
 ### Activate authentication and authorization on the broker
 
 Edit the Kafka Resource of my-cluster
@@ -335,6 +348,42 @@ Create a secure consumer. Check all the configs necessary in the yaml file.
 
 ```
 oc apply -f quarkus-kafka-consumer-secure.yml
+```
+
+
+Try Running you client from outside of Openshift and see that it's not working anymore
+
+```
+cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
+```
+
+Get the password from the secret
+
+```
+oc get secret secure-topic-reader -o yaml | grep password | sed -E 's/.*password: (.*)/\1/' | base64 -d
+```
+
+Now change it config
+
+```
+vi execs/config/application.properties
+
+
+mp.messaging.incoming.events.bootstrap.servers=<YOUR_ROUTE>:443
+mp.messaging.incoming.events.security.protocol=SASL_SSL
+mp.messaging.incoming.events.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="secure-topic-reader" password="XXX";
+```
+
+Rerun the app
+
+```
+cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
+```
+
+Run a producer to test it
+
+```
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker
