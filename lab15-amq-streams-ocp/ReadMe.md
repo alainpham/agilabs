@@ -152,7 +152,7 @@ Review this file `examples/kafka/kafka-persistent.yaml`
 Then run the following command to create it
 
 ```
-oc apply -f examples/kafka/kafka-persistent.yaml
+oc apply -f kafka-persistent.yaml
 ```
 Observe the create of different components in this order:
 - Zookeeper cluster
