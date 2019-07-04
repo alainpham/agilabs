@@ -16,7 +16,7 @@
         <from uri="servlet:send"></from>
         <log message="Sending"></log>
         <convertBodyTo type="java.lang.String"></convertBodyTo>
-        <bean ref="smallrye-producer" method="send(${body})"></bean>
+        <bean ref="smallrye-producer" method="produce(${body})"></bean>
         <setBody>
             <constant>Message sent</constant>
         </setBody> 

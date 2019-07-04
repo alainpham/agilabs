@@ -18,8 +18,7 @@ public class CamelWiring{
     Logger logger = LoggerFactory.getLogger(CamelWiring.class);
 
     @Inject
-    @Stream("out-events")
-    Emitter<String> emitter;
+    Producer smallRyeProducer;
 
     @Inject
     CamelContext camelContext;
@@ -31,7 +30,7 @@ public class CamelWiring{
         //     throw new Exception("Wiring SmallRye Emitter to Camel Context failed !");
         // }
 
-        camelContext.getRegistry().bind("smallrye-producer", emitter);
+        camelContext.getRegistry().bind("smallrye-producer", smallRyeProducer);
         logger.info("Wiring SmallRye Emitter to camel context succeded.");
     }
 
