@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+    <route id="hello">
+        <from uri="direct:hello"></from>
+        <log message="Hello from Camel direct Endpoint"></log>
+        <setBody><constant>Hello from camel direct</constant></setBody>
+    </route>
+    
+    <route id="receive-kafka-events">
+        <from uri="direct:receive-events"></from>
+        <log message="Received from kafka broker : ${body}"></log>
+    </route>
+    
+    <route id="send-kafka-events">
+        <from uri="servlet:send"></from>
+        <log message="Sending"></log>
+        <convertBodyTo type="java.lang.String"></convertBodyTo>
+        <bean ref="smallrye-producer" method="send(${body})"></bean>
+        <setBody>
+            <constant>Message sent</constant>
+        </setBody> 
+    </route>
+</routes>

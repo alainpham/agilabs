@@ -23,6 +23,7 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
     - [Deploy grafana](#Deploy-grafana)
     - [Configure dashboard](#Configure-dashboard)
   - [Deleting stuff (Instructor only)](#Deleting-stuff-Instructor-only)
+- [End to end demo](#End-to-end-demo)
 
 ## Prerequisites
 
@@ -478,9 +479,60 @@ done
 echo "deleting ClusterRoles"
 oc delete -f install/cluster-operator/*ClusterRole-*
 
+oc delete clusterrole strimzi-cluster-operator-global strimzi-cluster-operator-namespaced strimzi-entity-operator strimzi-kafka-broker strimzi-topic-operator
+
 echo "deleting CRDs"
 oc delete -f install/cluster-operator/*Crd*
 
+oc delete crd  kafkabridges.kafka.strimzi.io kafkaconnects.kafka.strimzi.io kafkaconnects2is.kafka.strimzi.io kafkamirrormakers.kafka.strimzi.io kafkas.kafka.strimzi.io kafkatopics.kafka.strimzi.io kafkausers.kafka.strimzi.io
+
 ```
 
+
+# End to end demo
+
+Create project
+```
+SUFFIX=me
+AMQSTREAMSPROJECT=strimzi-kafka
+
+oc new-project $AMQSTREAMSPROJECT
+```
+
+Change config files to create CRDS & Role Bindings
+
+```
+sed -i "s/namespace: .*/namespace: $AMQSTREAMSPROJECT/" install/cluster-operator/*RoleBinding*.yaml
+
+sed -i "s/registry.access.redhat.com\/amq7\//docker-registry.default.svc:5000\/openshift\//" install/cluster-operator/050-Deployment-strimzi-cluster-operator.yaml
+```
+
+Create the cluster operator
+
+```
+oc apply -f install/cluster-operator -n $AMQSTREAMSPROJECT
+```
+
+Create app templates for Graphical Deployments
+```
+oc apply -f examples/templates/cluster-operator -n $AMQSTREAMSPROJECT
+oc apply -f examples/templates/topic-operator  -n $AMQSTREAMSPROJECT
+```
+
+Create a cluster
+
+```
+oc apply -f kafka-persistent.yaml
+
+```
+
+Test
+
+```
+oc run kafka-consumer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+
+
+oc run kafka-producer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+
+```
 
