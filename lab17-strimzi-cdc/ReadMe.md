@@ -22,6 +22,7 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
     - [Deploy prometheus](#deploy-prometheus)
     - [Deploy grafana](#deploy-grafana)
     - [Configure dashboard](#configure-dashboard)
+  - [Kafka Bridge](#kafka-bridge)
   - [Deleting stuff (Instructor only)](#deleting-stuff-instructor-only)
 
 ## Prerequisites
@@ -113,7 +114,7 @@ rmdir strimzi-0.12.1
 We are going to install the cluster operator in the project named `amq-streams-userXX`. Set the environment variable to your name for the lab.
 
 ```
-SUFFIX=user01
+SUFFIX=user02
 AMQSTREAMSPROJECT=amq-streams-$SUFFIX
 
 echo $AMQSTREAMSPROJECT
@@ -143,7 +144,7 @@ sed -i -E "0,/name:.*/s/(name: strimzi-cluster-operator-kafka-broker-delegation)
 Now install the cluster operator into your project. Next step creates all the CRDs and the RoleBindings for the cluster operator to function. Finally it will deploy the cluster operator into the project.
 
 ```
-oc create -f install/cluster-operator -n $AMQSTREAMSPROJECT
+oc apply -f install/cluster-operator -n $AMQSTREAMSPROJECT
 oc apply -f examples/templates/cluster-operator -n $AMQSTREAMSPROJECT
 oc apply -f examples/templates/topic-operator  -n $AMQSTREAMSPROJECT
 ```
@@ -454,6 +455,12 @@ And similarly for Zookeeper
 
 ```
 https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.12.1/metrics/examples/grafana/strimzi-zookeeper.json
+```
+
+## Kafka Bridge
+
+```
+oc apply -f 13-kafka-bridge.yaml
 ```
 
 ## Deleting stuff (Instructor only)
