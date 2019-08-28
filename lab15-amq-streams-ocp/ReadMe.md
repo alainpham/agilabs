@@ -2,28 +2,28 @@
 
 This workshop aims at showing attendees how to do basic deploy/manage, secure, and monitor operations on AMQ Streams ( Strimzi & Kafka ).
 
-- [AMQ Streams (Strimzi + Kafka) on OCP workshop](#AMQ-Streams-Strimzi--Kafka-on-OCP-workshop)
-  - [Prerequisites](#Prerequisites)
-  - [AMQ Streams components and basic concepts](#AMQ-Streams-components-and-basic-concepts)
-    - [Custom Resource Definitions](#Custom-Resource-Definitions)
-    - [Cluster Operator](#Cluster-Operator)
-    - [Topic Operator](#Topic-Operator)
-    - [User Operator](#User-Operator)
-  - [Lab 01 - Install and deploy AMQ Streams Kafka Clusters](#Lab-01---Install-and-deploy-AMQ-Streams-Kafka-Clusters)
-    - [Cluster Management](#Cluster-Management)
-    - [Testing environment](#Testing-environment)
-    - [Topic Management](#Topic-Management)
-  - [Lab 02 -Secure Broker/Client communications](#Lab-02--Secure-BrokerClient-communications)
-    - [Access broker from outside the cluster](#Access-broker-from-outside-the-cluster)
-    - [Activate authentication and authorization on the broker](#Activate-authentication-and-authorization-on-the-broker)
-  - [Lab 03 -Resiliency with Mirror Maker](#Lab-03--Resiliency-with-Mirror-Maker)
-  - [Lab 04 - Monitoring Kafka Clusters](#Lab-04---Monitoring-Kafka-Clusters)
-    - [Exposing kafka metrics](#Exposing-kafka-metrics)
-    - [Deploy prometheus](#Deploy-prometheus)
-    - [Deploy grafana](#Deploy-grafana)
-    - [Configure dashboard](#Configure-dashboard)
-  - [Deleting stuff (Instructor only)](#Deleting-stuff-Instructor-only)
-- [End to end demo](#End-to-end-demo)
+- [AMQ Streams (Strimzi + Kafka) on OCP workshop](#amq-streams-strimzi--kafka-on-ocp-workshop)
+  - [Prerequisites](#prerequisites)
+  - [AMQ Streams components and basic concepts](#amq-streams-components-and-basic-concepts)
+    - [Custom Resource Definitions](#custom-resource-definitions)
+    - [Cluster Operator](#cluster-operator)
+    - [Topic Operator](#topic-operator)
+    - [User Operator](#user-operator)
+  - [Lab 01 - Install and deploy AMQ Streams Kafka Clusters](#lab-01---install-and-deploy-amq-streams-kafka-clusters)
+    - [Cluster Management](#cluster-management)
+    - [Testing environment](#testing-environment)
+    - [Topic Management](#topic-management)
+  - [Lab 02 -Secure Broker/Client communications](#lab-02--secure-brokerclient-communications)
+    - [Access broker from outside the cluster](#access-broker-from-outside-the-cluster)
+    - [Activate authentication and authorization on the broker](#activate-authentication-and-authorization-on-the-broker)
+  - [Lab 03 -Resiliency with Mirror Maker](#lab-03--resiliency-with-mirror-maker)
+  - [Lab 04 - Monitoring Kafka Clusters](#lab-04---monitoring-kafka-clusters)
+    - [Exposing kafka metrics](#exposing-kafka-metrics)
+    - [Deploy prometheus](#deploy-prometheus)
+    - [Deploy grafana](#deploy-grafana)
+    - [Configure dashboard](#configure-dashboard)
+  - [Deleting stuff (Instructor only)](#deleting-stuff-instructor-only)
+- [End to end demo](#end-to-end-demo)
 
 ## Prerequisites
 
@@ -104,7 +104,7 @@ cluster-admin-0    /cluster-admin    YOUR_USER
 Unzip the downloaded script package 
 
 ```
-unzip amq-streams-1.1.0-ocp-install-examples.zip
+unzip amq-streams-1.2.0-ocp-install-examples.zip
 ```
 ### Cluster Management
 
