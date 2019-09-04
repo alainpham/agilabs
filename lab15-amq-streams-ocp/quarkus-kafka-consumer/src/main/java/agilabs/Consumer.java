@@ -10,6 +10,6 @@ public class Consumer {
 
     @Incoming("events")
     public void consume(String message) {              
-        System.out.println(message);
+        System.out.println("Received " + message);
     }
 }
