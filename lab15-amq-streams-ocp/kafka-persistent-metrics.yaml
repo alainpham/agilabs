@@ -1,11 +1,16 @@
-apiVersion: kafka.strimzi.io/v1alpha1
+apiVersion: kafka.strimzi.io/v1beta1
 kind: Kafka
 metadata:
   name: my-cluster
 spec:
   kafka:
-    version: 2.1.1
-    replicas: 3
+    version: 2.2.1
+    replicas: 1
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        memory: 1Gi
     listeners:
       external:
         type: route
@@ -21,9 +26,12 @@ spec:
       transaction.state.log.min.isr: 2
       log.message.format.version: "2.1"
     storage:
-      type: persistent-claim
-      size: 9Gi
-      deleteClaim: false
+      type: jbod
+      volumes:
+        - id: 0
+          type: persistent-claim
+          size: 9Gi
+          deleteClaim: false
     metrics:
       # Inspired by config from Kafka 2.0.0 example rules:
       # https://github.com/prometheus/jmx_exporter/blob/master/example_configs/kafka-2_0_0.yml
@@ -122,38 +130,16 @@ spec:
         labels:
           quantile: "0.$4"
   zookeeper:
-    replicas: 3
+    replicas: 1
+    resources:
+      requests:
+        memory: 256Mi
+      limits:
+        memory: 256Mi
     storage:
       type: persistent-claim
       size: 9Gi
       deleteClaim: false
-    metrics:
-      # Inspired by Zookeeper rules
-      # https://github.com/prometheus/jmx_exporter/blob/master/example_configs/zookeeper.yaml
-      lowercaseOutputName: true
-      rules:
-      # replicated Zookeeper
-      - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+)><>(\\w+)"
-        name: "zookeeper_$2"
-      - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+)><>(\\w+)"
-        name: "zookeeper_$3"
-        labels:
-          replicaId: "$2"
-      - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=(\\w+)><>(\\w+)"
-        name: "zookeeper_$4"
-        labels:
-          replicaId: "$2"
-          memberType: "$3"
-      - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=(\\w+), name3=(\\w+)><>(\\w+)"
-        name: "zookeeper_$4_$5"
-        labels:
-          replicaId: "$2"
-          memberType: "$3"
-      # standalone Zookeeper
-      - pattern: "org.apache.ZooKeeperService<name0=StandaloneServer_port(\\d+)><>(\\w+)"
-        name: "zookeeper_$2"
-      - pattern: "org.apache.ZooKeeperService<name0=StandaloneServer_port(\\d+), name1=(InMemoryDataTree)><>(\\w+)"
-        name: "zookeeper_$2_$3"
   entityOperator:
     topicOperator: {}
     userOperator: {}

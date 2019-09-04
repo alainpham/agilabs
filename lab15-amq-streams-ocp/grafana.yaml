@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: strimzilab/grafana-openshift:latest
+        image: docker-registry.default.svc:5000/openshift/grafana:v3.11
         imagePullPolicy: IfNotPresent
         ports:
         - name: grafana
@@ -24,12 +24,19 @@ spec:
         - name: grafana-data
           mountPath: /var/lib/grafana
         - name: grafana-logs
-          mountPath: /var/log/grafana
+          mountPath: /var/lib/grafana/logs
+        - name: grafana-config
+          mountPath: /etc/grafana/
+        args:
+          - '-config=/etc/grafana/grafana.ini'
       volumes:
       - name: grafana-data
         emptyDir: {}
       - name: grafana-logs
         emptyDir: {}
+      - name: grafana-config
+        configMap:
+          name: grafana-config
 ---
 apiVersion: v1
 kind: Service
@@ -44,3 +51,15 @@ spec:
   selector:
     name: grafana
   type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+data:
+  grafana.ini: |-
+    [paths]
+    data = /var/lib/grafana
+    logs = /var/lib/grafana/logs
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning

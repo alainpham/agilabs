@@ -29,7 +29,7 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
 
 - Openshift Container Platform 3.11
 - oc client 3.11
-- amq-streams-1.1.1-ocp-install-examples.zip from [access.redhat.com](https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=68771)
+- amq-streams-1.2.0-ocp-install-examples.zip from [access.redhat.com](https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=70451)
 
 ## AMQ Streams components and basic concepts 
 
@@ -140,7 +140,7 @@ sed -i -E "0,/name:.*/s/(name: strimzi-cluster-operator-kafka-broker-delegation)
 
 (Next step is optional : Alternative if images are already in the local registry and avoid repulling)
 ```
-sed -i "s/registry.access.redhat.com\/amq7\//docker-registry.default.svc:5000\/openshift\//" install/cluster-operator/050-Deployment-strimzi-cluster-operator.yaml
+sed -i "s/registry.redhat.io\/amq7\//docker-registry.default.svc:5000\/openshift\//" install/cluster-operator/050-Deployment-strimzi-cluster-operator.yaml
 ```
 (end of optional step)
 
@@ -169,13 +169,25 @@ Observe the create of different components in this order:
 To test everything run a consumer:
 
 ```
-oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+```
+
+Alternatively from the local registry
+
+```
+oc run kafka-consumer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
 Run a producer
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+```
+
+Alternatively from the local registry
+
+```
+oc run kafka-producer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 Now let's send some ascii Art :)
@@ -314,7 +326,7 @@ mp.messaging.incoming.events.bootstrap.servers=<YOUR_ROUTE>:443
 mp.messaging.incoming.events.security.protocol=SSL
 ```
 
-Run the consumer. FYI, this an app built with Quarkus (Java app compiled to native executable)
+Run the consumer. FYI, this an app built with Quarkus
 
 ```
 cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
@@ -323,7 +335,7 @@ cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 Run a producer to test it
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 ### Activate authentication and authorization on the broker
 
@@ -331,9 +343,14 @@ Edit the Kafka Resource of my-cluster
 
 ```
     listeners:
-      tls:
+      external:
+        type: route
         authentication:
-          type: scram-sha-512
+          type: scram-sha-512        
+      plain: {}
+      tls: 
+        authentication:
+          type: scram-sha-512  
 ```
 
 or run the following command line
@@ -388,7 +405,7 @@ cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 Run a producer to test it
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker
@@ -404,7 +421,7 @@ my-cluster-kafka-bootstrap.amq-streams-userXX.svc.cluster.local
 Run a producer to test it out
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 ## Lab 04 - Monitoring Kafka Clusters

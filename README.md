@@ -4,13 +4,14 @@
 - [Table of contents](#table-of-contents)
 - [PoC Environment Preparation](#poc-environment-preparation)
   - [Import images](#import-images)
-    - [Add trusted certificate for okd image registry manipulations on distant machines](#add-trusted-certificate-for-okd-image-registry-manipulations-on-distant-machines)
+    - [Add trusted certificate for openshift image registry manipulations on distant machines](#add-trusted-certificate-for-openshift-image-registry-manipulations-on-distant-machines)
     - [From this point we will set the image registry url](#from-this-point-we-will-set-the-image-registry-url)
     - [Downloading Fuse images with Skopeo](#downloading-fuse-images-with-skopeo)
     - [Downloading AMQ Broker images with Skopeo](#downloading-amq-broker-images-with-skopeo)
     - [Downloading AMQ Interconnect images with Skopeo](#downloading-amq-interconnect-images-with-skopeo)
     - [Downloading AMQ Streams Strimzi images with Skopeo](#downloading-amq-streams-strimzi-images-with-skopeo)
     - [Downloading AMQ Online Images with Skopeo](#downloading-amq-online-images-with-skopeo)
+    - [Downloading Monitoring images with Skopeo](#downloading-monitoring-images-with-skopeo)
 - [Memory consumption estimation](#memory-consumption-estimation)
 
 
@@ -42,7 +43,8 @@ List of images to be imported. Replace LOCAL with your own local repo ie : `dock
 |docker://registry.redhat.io/amq7/amq-streams-operator:1.2.0|docker://LOCAL/openshift/amq-streams-operator:1.2.0|
 |docker://registry.redhat.io/amq7/amq-streams-bridge:1.2.0|docker://LOCAL/openshift/amq-streams-bridge:1.2.0|
 |docker://registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0|docker://LOCAL/openshift/amq-streams-kafka-22:1.2.0|
-### Add trusted certificate for okd image registry manipulations on distant machines
+
+### Add trusted certificate for openshift image registry manipulations on distant machines
 ```
 oc extract -n default secrets/registry-certificates --keys=registry.crt
 cp registry.crt /etc/pki/ca-trust/source/anchors/registry-openshift-ca.crt
@@ -181,7 +183,51 @@ do
  skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
 done
 ```
+### Downloading Monitoring images with Skopeo + oauth
 
+Credentials to registry.redhat.io registry are required here to use these enterprise images.
+
+```
+srcreg="docker://registry.redhat.io/"
+tag="v3.11"
+ns="openshift3/"
+imglist="prometheus grafana oauth-proxy"
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo copy --screds $user:$pass $srcreg$ns$img:$tag oci:./target:$ns$img:$tag
+done
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+```
+
+### Downloading RH SSO images with Skopeo
+
+Credentials to registry.redhat.io registry are required here to use these enterprise images.
+
+```
+srcreg="docker://registry.redhat.io/"
+tag="1.0"
+ns="redhat-sso-7/"
+imglist="sso73-openshift"
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo copy --screds $user:$pass $srcreg$ns$img:$tag oci:./target:$ns$img:$tag
+done
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+```
 
 # Memory consumption estimation
 
