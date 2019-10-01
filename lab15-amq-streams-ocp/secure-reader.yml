@@ -15,7 +15,7 @@ spec:
           type: topic
           name: my-topic
           patternType: literal
-        operation: Read
+        operation: All
         host: "*"
       - resource:
           type: topic

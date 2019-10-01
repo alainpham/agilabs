@@ -10,11 +10,11 @@
 	<name>lab02-service-composition</name>
 	<description>lab02-service-composition</description>
 	<properties> 
-        <fuse.version>7.3.1.fuse-731003-redhat-00003</fuse.version>
-		<version.org.apache.camel>2.21.0.fuse-731003-redhat-00003</version.org.apache.camel>
+        <fuse.version>7.4.0.fuse-740036-redhat-00002</fuse.version>
+		<version.org.apache.camel>2.21.0.fuse-740039-redhat-00001</version.org.apache.camel>
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <swagger.ui.version>3.22.2</swagger.ui.version>
-        <swagger.codegen.version>2.3.1</swagger.codegen.version>
+        <swagger.ui.version>3.23.5</swagger.ui.version>
+        <swagger.codegen.version>3.0.10</swagger.codegen.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -158,6 +158,7 @@
 			<plugin>
 				<groupId>org.jboss.redhat-fuse</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${fuse.version}</version>
 				<executions>
 					<execution>
 						<goals>

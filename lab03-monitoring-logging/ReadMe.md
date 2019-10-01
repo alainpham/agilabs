@@ -5,12 +5,13 @@ wget https://bintray.com/kennedyoliveira/maven/download_file?file_path=com%2Fgit
 
 java -jar standalone-hystrix-dashboard-1.5.6-all.jar
 
+oc project apps
 oc create -f hystrix-dashboard-1.0.28-openshift.yml
 oc expose service hystrix-dashboard --port=8080
 
 view on openshift
 
-http://hystrix-dashboard-fuse.app.88.198.65.4.nip.io/monitor/monitor.html?stream=http%3A%2F%2Flab02-service-composition-fuse.app.88.198.65.4.nip.io%2Fhystrix.stream
+http://hystrix-dashboard-fuse.apps.88.198.65.4.nip.io/monitor/monitor.html?stream=http%3A%2F%2Flab02-service-composition-fuse.app.88.198.65.4.nip.io%2Fhystrix.stream
 
 # Setup Elastic search with fuse index
 

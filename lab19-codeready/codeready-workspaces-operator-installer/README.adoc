@@ -1,0 +1,22 @@
+= Red Hat CodeReady Workspaces operator installer README
+
+Red Hat CodeReady Workspaces is a developer workspace server and cloud IDE.
+
+== About CodeReady Workspaces
+
+See product _Release Notes and Known Issues_ for more information about the product and the current version:
+
+https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/1.2/html/release_notes_and_known_issues/
+
+== Installing CodeReady Workspaces
+
+See the CodeReady Workspaces _Administration Guide_ for instructions on how to deploy the product using various configurations and on different flavors of the OpenShift platform. The _Administration Guide_ includes instructions on how to:
+
+* deploy with different parameters on Red Hat OpenShift Container Platform 3.11
+* deploy on Red Hat OpenShift Container Platform 4.1
+* deploy on Red Hat OpenShift Dedicated
+* deploy on Red Hat OpenShift Container Platform in a restricted environment
+* migrate from the previous version of the product
+* uninstall the product
+
+https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/1.2/html/administration_guide/

@@ -36,6 +36,7 @@ oc apply -f install/bundles/amq-online
 oc apply -f install/components/example-plans
 oc apply -f install/components/example-roles
 oc apply -f install/components/example-authservices/standard-authservice.yaml
+oc apply -f install/components/example-authservices/none-authservice.yaml
 ```
 
 

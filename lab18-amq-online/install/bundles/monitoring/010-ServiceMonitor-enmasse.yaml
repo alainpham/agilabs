@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: enmasse
+  labels:
+    monitoring-key: middleware
+    app: enmasse
+spec:
+  selector:
+    matchLabels:
+      app: enmasse
+  endpoints:
+  - port: health
+  namespaceSelector:
+    matchLabels:
+      monitoring-key: middleware

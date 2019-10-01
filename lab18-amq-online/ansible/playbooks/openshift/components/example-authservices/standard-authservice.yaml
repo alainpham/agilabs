@@ -1,0 +1,10 @@
+apiVersion: admin.enmasse.io/v1beta1
+kind: AuthenticationService
+metadata:
+  name: standard-authservice
+spec:
+  type: standard
+  standard:
+    storage:
+      type: persistent-claim
+      size: 5Gi

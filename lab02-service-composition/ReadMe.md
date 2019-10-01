@@ -58,6 +58,8 @@ curl -X GET --header "Accept: application/json" "http://localhost:8090/camel/cus
 
 curl -X GET --header "Accept: application/json" "http://lab02-service-composition-fuse.app.88.198.65.4.nip.io/camel/customer?id=wsebrook0%40privacy.gov.au"
 
+curl -X GET --header "Accept: application/json" "http://lab02-service-composition-apps.apps.88.198.65.4.nip.io/camel/customer?id=wsebrook0%40privacy.gov.au"
+
 curl -X GET --header "Accept: application/json" "https://api-3scale-apicast-staging.amp.88.198.65.4.nip.io:443/camel/customer?id=wsebrook0%40privacy.gov.au" -k -H'user-key: 34c71375bf490ab8ad06519fe951edfe' 
 
 

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+
+    <camelContext id="lab03-fuse-logging-es" xmlns="http://camel.apache.org/schema/spring">
+
+		<rest id="restsvc"  path="/restsvc">
+			<get id="get-ping" uri="/ping">
+				<route id="get-pring-route">
+					<setBody>
+						<method ref="myTransformer" />
+					</setBody>
+				</route>
+			</get>
+		</rest>
+
+        <route id="http-receiver">
+            <from id="http-receiver-starter" uri="servlet://ping" />
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody>
+                <constant>{"msg" : "HELLO"}</constant>
+            </setBody>
+        </route>
+
+        <route id="lab03-fuse-logging-es-sample-route">
+            <from uri="timer:timerName?period=5000" />
+            <to uri="direct:logStartEvent"/>
+            <log message="Processing data ${headers.breadcrumbId}" />
+            <delay>
+                <simple>random(100,1500)</simple>
+            </delay>
+            <to uri="direct:logEndEvent"/>
+        </route>
+
+
+
+        <!-- Logging -->
+        <route id="logStartEvent">
+            <from id="_from4" uri="direct:logStartEvent" />
+            <setHeader headerName="startts" id="_setHeader5">
+                <method beanType="java.lang.System" method="currentTimeMillis" />
+            </setHeader>
+            <wireTap id="logEventSart" pattern="OutOnly" uri="{{loggingEndpoint}}">
+                <body>
+                    <simple>null</simple>
+                </body>
+                <setHeader headerName="state">
+                    <constant>start</constant>
+                </setHeader>
+            </wireTap>
+        </route>
+
+        <route id="logEndEvent">
+            <from id="_from5" uri="direct:logEndEvent" />
+            <setHeader headerName="endts" id="_setHeader6">
+                <method beanType="java.lang.System" method="currentTimeMillis" />
+            </setHeader>
+            <process id="_process1" ref="elapsedTimeProcessor" />
+            <wireTap id="logEventOk" pattern="OutOnly" uri="{{loggingEndpoint}}">
+                <setHeader headerName="state">
+                    <constant>end</constant>
+                </setHeader>
+            </wireTap>
+        </route>
+
+    </camelContext>
+
+</beans>

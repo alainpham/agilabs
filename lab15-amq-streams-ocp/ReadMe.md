@@ -141,6 +141,8 @@ sed -i -E "0,/name:.*/s/(name: strimzi-cluster-operator-kafka-broker-delegation)
 (Next step is optional : Alternative if images are already in the local registry and avoid repulling)
 ```
 sed -i "s/registry.redhat.io\/amq7\//docker-registry.default.svc:5000\/openshift\//" install/cluster-operator/050-Deployment-strimzi-cluster-operator.yaml
+
+sed -i "s/registry.access.redhat.com\/amq7\//docker-registry.default.svc:5000\/openshift\//" install/cluster-operator/050-Deployment-strimzi-cluster-operator.yaml
 ```
 (end of optional step)
 
@@ -307,6 +309,9 @@ Extract secrets and import into a trust store to trust the broker public key.
 
 ```
 oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
+oc extract secret/my-cluster-clients-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
+
+rm execs/config/trust.p12
 keytool -importcert -keystore execs/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/config/certificate.crt -noprompt
 ```
 
