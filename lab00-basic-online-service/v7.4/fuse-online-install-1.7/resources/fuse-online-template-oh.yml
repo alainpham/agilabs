@@ -386,7 +386,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/amq63-openshift:1.3
+        name: registry.access.redhat.com/jboss-amq-6/amq63-openshift:1.3
       importPolicy:
         scheduled: true
       name: "1.3"
@@ -2869,7 +2869,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/fuse-ignite-server:1.4-14
+        name: registry.redhat.io/fuse7/fuse-ignite-server:1.4-14
       importPolicy:
         scheduled: true
       name: "1.7"
@@ -2887,7 +2887,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/fuse-ignite-ui:1.4-6
+        name: registry.redhat.io/fuse7/fuse-ignite-ui:1.4-6
       importPolicy:
         scheduled: true
       name: "1.7"
@@ -2905,7 +2905,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/fuse-ignite-meta:1.4-13
+        name: registry.redhat.io/fuse7/fuse-ignite-meta:1.4-13
       importPolicy:
         scheduled: true
       name: "1.7"
@@ -2921,7 +2921,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/ose-oauth-proxy:4.1
+        name: registry.redhat.io/openshift4/ose-oauth-proxy:4.1
       importPolicy:
         scheduled: true
       name: "v1.1.0"
@@ -2937,7 +2937,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/prometheus:v3.9.25
+        name: registry.access.redhat.com/openshift3/prometheus:v3.9.25
       importPolicy:
         scheduled: true
       name: "v2.1.0"
@@ -2955,7 +2955,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/fuse-ignite-s2i:1.4-13
+        name: registry.redhat.io/fuse7/fuse-ignite-s2i:1.4-13
       importPolicy:
         scheduled: true
       name: "1.7"
@@ -2974,7 +2974,7 @@ objects:
     tags:
       - from:
           kind: DockerImage
-          name: docker-registry.default.svc:5000/openshift/fuse-postgres-exporter:1.4-4
+          name: registry.redhat.io/fuse7-tech-preview/fuse-postgres-exporter:1.4-4
         importPolicy:
           scheduled: true
         name: "v0.4.7"
@@ -2992,7 +2992,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/openshift/data-virtualization-server-rhel7:1.4-15
+        name: registry.redhat.io/fuse7-tech-preview/data-virtualization-server-rhel7:1.4-15
       importPolicy:
         scheduled: true
       name: "latest"

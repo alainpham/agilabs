@@ -1,5 +1,45 @@
 # Install Grafana Dashboard
 
+
+# Configure Prometheus to scrape apps
+
+```
+pass=REPLACE_PASSWORD
+
+oc new-project apps-monitoring
+oc create secret generic prom --from-file distrib/prometheus.yml -o yaml --dry-run | oc create -f -
+
+echo $pass | htpasswd -c -i -s distrib/auth internal
+
+oc create secret generic prometheus-htpasswd --from-file distrib/auth -o yaml --dry-run | oc create -f -
+rm distrib/auth
+
+oc create -f distrib/prometheus-standalone.yml
+oc new-app prometheus
+oc adm policy add-cluster-role-to-user cluster-reader system:serviceaccount:apps-monitoring:prom
+```
+
+#Install grafana
+
+```
+cat distrib/promconnect.yml | sed "s/PASSWORD/$pass/" > promconnect.yml
+oc create secret generic grafana-datasources --from-file promconnect.yml -o yaml --dry-run | oc create -f -
+rm promconnect.yml
+
+oc delete all -l app=grafana
+oc delete service grafana
+oc delete serviceaccount grafana
+oc delete clusterrolebinding grafana-cluster-reader
+oc delete secret grafana-proxy
+oc delete routes grafana
+oc delete configmap grafana-config
+
+oc create -f distrib/grafana.yml
+oc replace -f distrib/grafana.yml
+oc new-app grafana
+
+```
+
 # Get Hystrix for viewing circuitbreaker
 wget https://bintray.com/kennedyoliveira/maven/download_file?file_path=com%2Fgithub%2Fkennedyoliveira%2Fstandalone-hystrix-dashboard%2F1.5.6%2Fstandalone-hystrix-dashboard-1.5.6-all.jar
 

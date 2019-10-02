@@ -1,0 +1,201 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: grafana
+  annotations:
+    "openshift.io/display-name": Grafana
+    description: |
+      Grafana server with patched Prometheus datasource.
+    iconClass: fa fa-cogs
+    tags: "metrics,monitoring,grafana,prometheus"
+parameters:
+- description: The location of the grafana image
+  name: IMAGE_GRAFANA
+  value: grafana/grafana:5.2.1
+- description: The location of the proxy image
+  name: IMAGE_PROXY
+  value: openshift/oauth-proxy:v1.1.0
+- description: External URL for the grafana route
+  name: ROUTE_URL
+  value: "grafana-apps-monitoring.apps.88.198.65.4.nip.io"
+- description: The namespace to instantiate heapster under. Defaults to 'grafana'.
+  name: NAMESPACE
+  value: apps-monitoring
+- description: The session secret for the proxy
+  name: SESSION_SECRET
+  generate: expression
+  from: "[a-zA-Z0-9]{43}"
+objects:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: grafana
+    namespace: "${NAMESPACE}"
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"grafana"}}'
+- apiVersion: authorization.openshift.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: grafana-cluster-reader
+  roleRef:
+    name: cluster-reader
+  subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: "${NAMESPACE}"
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    name: grafana
+    namespace: "${NAMESPACE}"
+  spec:
+    port:
+      targetPort: https
+    to:
+      kind: Service
+      name: grafana
+    tls:
+      termination: reencrypt
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: grafana
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/scheme: https
+      service.alpha.openshift.io/serving-cert-secret-name: grafana-tls
+    namespace: "${NAMESPACE}"
+    labels:
+      metrics-infra: grafana
+      name: grafana
+  spec:
+    ports:
+      - name: https
+        port: 3000
+        protocol: TCP
+        targetPort: https
+    selector:
+      app: grafana
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: grafana-proxy
+    namespace: "${NAMESPACE}"
+  stringData:
+    session_secret: "${SESSION_SECRET}="
+# Deploy Grafana behind an oauth proxy
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: grafana
+    name: grafana
+    namespace: "${NAMESPACE}"
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: grafana
+    template:
+      metadata:
+        labels:
+          app: grafana
+        name: grafana
+      spec:
+        serviceAccountName: grafana
+        containers:
+        #OAUTH PROXY 
+        - image: ${IMAGE_PROXY}
+          name: grafana-proxy
+          ports:
+            - containerPort: 3000
+              name: https
+              protocol: TCP
+          args:
+            - '-provider=openshift'
+            - '-https-address=:3000'
+            - '-http-address='
+            - '-email-domain=*'
+            - '-upstream=http://localhost:3001'
+            - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+            - >-
+              -openshift-delegate-urls={"/": {"resource": "namespaces", "verb":
+              "get"}}
+            - '-tls-cert=/etc/tls/private/tls.crt'
+            - '-tls-key=/etc/tls/private/tls.key'
+            - >-
+              -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+            - '-cookie-secret-file=/etc/proxy/secrets/session_secret'
+            - '-openshift-service-account=grafana'
+            - '-openshift-ca=/etc/pki/tls/cert.pem'
+            - '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+            - '-skip-auth-regex=^/metrics'
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/tls/private
+              name: secret-grafana-tls
+            - mountPath: /etc/proxy/secrets
+              name: secret-grafana-proxy
+        #GRAFANA-CONTAINER
+        - name: grafana
+          image: ${IMAGE_GRAFANA}
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          args:
+            - '-config=/etc/grafana/grafana.ini'          
+          volumeMounts:
+            - mountPath: /etc/grafana
+              name: grafana-config
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources              
+        volumes:
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: secret-grafana-proxy
+          secret:
+            secretName: grafana-proxy
+        - name: secret-grafana-tls
+          secret:
+            secretName: grafana-tls
+        - name: grafana-storage
+          emptyDir: {}
+        - name: grafana-datasources
+          secret:
+            defaultMode: 420
+            secretName: grafana-datasources
+
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: grafana-config
+    namespace: "${NAMESPACE}"
+  data:
+    grafana.ini: |-
+      [auth]
+      disable_login_form = true
+      disable_signout_menu = true
+      [auth.basic]
+      enabled = false
+      [auth.proxy]
+      auto_sign_up = true
+      enabled = true
+      header_name = X-Forwarded-User
+      [paths]
+      data = /var/lib/grafana
+      logs = /var/lib/grafana/logs
+      plugins = /var/lib/grafana/plugins
+      provisioning = /etc/grafana/provisioning
+      [server]
+      http_addr = 127.0.0.1
+      http_port = 3001
+      [security]
+      admin_user = me

@@ -5,7 +5,7 @@
   spec:
     containers:
     - name: upgrade
-      image: docker-registry.default.svc:5000/openshift/fuse-ignite-uprade:1.4-8
+      image: registry.redhat.io/fuse7/fuse-ignite-uprade:1.4-8
       env:
         - name: SYNDESIS_UPGRADE_PROJECT
           valueFrom:

@@ -57,6 +57,12 @@ oc extract -n default secrets/registry-certificates --keys=registry.crt
 cp registry.crt /etc/pki/ca-trust/source/anchors/registry-openshift-ca.crt
 update-ca-trust extract
 ```
+(On archlinux)
+
+```
+sudo cp registry.crt /etc/ca-certificates/trust-source/anchors/registry-openshift-ca.crt
+sudo trust extract-compat
+```
 
 ### From this point we will set the image registry url
 

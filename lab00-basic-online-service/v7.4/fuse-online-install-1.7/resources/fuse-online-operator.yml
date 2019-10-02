@@ -252,7 +252,7 @@ spec:
   - from:
       kind: DockerImage
       # Keep tag 'latest' here, its used as an anchor in the release script
-      name: docker-registry.default.svc:5000/openshift/fuse-online-operator:1.4-11
+      name: registry.redhat.io/fuse7/fuse-online-operator:1.4-11
     importPolicy:
       scheduled: true
     name: "1.7"
