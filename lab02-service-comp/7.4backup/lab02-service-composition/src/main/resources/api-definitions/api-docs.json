@@ -1,0 +1,51 @@
+{
+  "swagger" : "2.0",
+  "info" : { 
+  	"version":"1.0.0"
+  },
+  "host" : "localhost:8091",
+  "basePath" : "/camel",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/customer/{id}" : {
+      "get" : {
+        "operationId" : "customersvcmock",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Output type",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Customer" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "age" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "address" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

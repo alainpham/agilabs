@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rests xmlns="http://camel.apache.org/schema/spring">
+    <rest id="rest-svc-group">
+        <get id="getCustomer" produces="application/json" uri="/customer">
+            <param dataType="string" name="id" required="true" type="query"/>
+			<to uri="direct:getCustomerCB"></to>
+        </get>
+        <get id="getCustomerRaw" produces="application/json" uri="/getCustomerRaw">
+            <param dataType="string" name="id" required="true" type="query"/>
+            <to uri="direct:getCustomer"/>
+        </get>
+    </rest>
+</rests>

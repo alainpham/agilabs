@@ -11,7 +11,7 @@ oc expose service hystrix-dashboard --port=8080
 
 view on openshift
 
-http://hystrix-dashboard-fuse.apps.88.198.65.4.nip.io/monitor/monitor.html?stream=http%3A%2F%2Flab02-service-composition-fuse.app.88.198.65.4.nip.io%2Fhystrix.stream
+http://hystrix-dashboard-apps.apps.88.198.65.4.nip.io/monitor/monitor.html?stream=http%3A%2F%2Flab02-service-composition-apps.apps.88.198.65.4.nip.io%2Fhystrix.stream
 
 # Setup Elastic search with fuse index
 

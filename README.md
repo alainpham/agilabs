@@ -18,6 +18,7 @@
     - [Fuse online images with Skopeo](#fuse-online-images-with-skopeo)
 - [Memory consumption estimation](#memory-consumption-estimation)
   - [Complete download](#complete-download)
+  - [Complete upload](#complete-upload)
 
 
 # PoC Environment Preparation
@@ -340,7 +341,6 @@ done
 ## Complete download
 
 ```
-
 srcreg="docker://registry.redhat.io/"
 tag="1.4"
 ns="fuse7/"
@@ -476,6 +476,137 @@ skopeo copy --screds $user:$pass docker://registry.redhat.io/fuse7-tech-preview/
 
 skopeo copy --screds $user:$pass docker://registry.access.redhat.com/jboss-amq-6/amq63-openshift:1.3 oci:./target:jboss-amq-6/amq63-openshift:1.3
 
+```
 
+## Complete upload
+
+```
+
+srcreg="docker://registry.redhat.io/"
+tag="1.4"
+ns="fuse7/"
+origpfx=fuse-
+targetpfx=fuse7-
+imglist="java-openshift console"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$targetpfx$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.4"
+ns="fuse7/"
+origpfx=fuse-
+targetsfx=-ui
+imglist="apicurito"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img$targetsfx:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$img$targetsfx:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.4"
+ns="fuse7/"
+origpfx=fuse-
+targetpfx=fuse-
+imglist="apicurito-generator"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$targetpfx$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="7.4"
+ns="amq7/"
+imglist="amq-broker"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.5"
+ns="amq7/"
+imglist="amq-interconnect"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.2.0"
+ns="amq7/"
+imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-22"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.2"
+ns="amq7/"
+imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="v3.11"
+ns="openshift3/"
+imglist="prometheus grafana oauth-proxy"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.0"
+ns="redhat-sso-7/"
+imglist="sso73-openshift"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+
+srcreg="docker://registry.redhat.io/"
+ns="fuse7/"
+imglist="fuse-ignite-server:1.4-14 fuse-ignite-ui:1.4-6 fuse-ignite-meta:1.4-13 fuse-ignite-s2i:1.4-13 fuse-online-operator:1.4-11"
+
+for img in $imglist
+do
+ echo docker://$REGISTRY/openshift/$img:$tag
+ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img docker://$REGISTRY/openshift/$img
+done
+
+skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:openshift3/prometheus:v3.9.25 docker://$REGISTRY/openshift/prometheus:v3.9.25
+
+skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:openshift4/ose-oauth-proxy:4.1 docker://$REGISTRY/openshift/ose-oauth-proxy:4.1
+
+skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:fuse7-tech-preview/fuse-postgres-exporter:1.4-4 docker://$REGISTRY/openshift/fuse-postgres-exporter:1.4-4
+
+
+skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:fuse7-tech-preview/data-virtualization-server-rhel7:1.4-15 docker://$REGISTRY/openshift/data-virtualization-server-rhel7:1.4-15
+
+skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:jboss-amq-6/amq63-openshift:1.3 docker://$REGISTRY/openshift/amq63-openshift:1.3
 
 ```
