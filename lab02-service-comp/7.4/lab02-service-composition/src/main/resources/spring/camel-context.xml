@@ -76,6 +76,9 @@
             <setHeader headerName="CamelHttpResponseCode" >
                 <constant>500</constant>
             </setHeader>
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
             <setBody >
                 <simple>{"error" : "REQUEST FAILED :  ${property.CamelExceptionCaught}"}</simple>
             </setBody>

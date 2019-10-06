@@ -1,12 +1,30 @@
+# Install stuff
+```
+BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003
+oc create -n openshift -f ${BASEURL}/fuse-apicurito.yml
+oc replace -f ${BASEURL}/fuse-apicurito.yml -n openshift
+
+oc new-project devops
+
+oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.ocp.loc
+oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.88.198.65.4.nip.io
+
+oc new-app jenkins-persistent -p MEMORY_LIMIT=1Gi -p VOLUME_CAPACITY=4Gi
+oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:devops:jenkins
+
+```
+
+Set cpu limit to 4cores for jenkins
 
 # Installation of Microcks
 
 ```
-oc new-project microcks
 
 oc create -f https://raw.githubusercontent.com/microcks/microcks/master/install/openshift/openshift-persistent-full-template.yml -n openshift
 
-oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-microcks.app.88.198.65.4.nip.io --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-microcks.app.88.198.65.4.nip.io --param=OPENSHIFT_MASTER=https://openshift.88.198.65.4.nip.io:8443 --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client
+oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-devops.apps.88.198.65.4.nip.io --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-devops.apps.88.198.65.4.nip.io --param=OPENSHIFT_MASTER=https://console.88.198.65.4.nip.io:8443 --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client -n devops
+
+oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-devops.apps.ocp.loc --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-devops.apps.ocp.loc --param=OPENSHIFT_MASTER=https://console.ocp.loc:8443 --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client -n devops
 ```
 
 # To delete Microck from project
@@ -29,12 +47,19 @@ curl -X POST 'http://microcks-devops.app.88.198.65.4.nip.io/dynarest/Beer%20Cata
 curl -X POST 'http://microcks-devops.app.88.198.65.4.nip.io/dynarest/Beer%20Catalog%20API/0.1/beer' -H 'Content-type: application/json' -d '{"name": "Westmalle Triple", "country": "Belgium", "type": "Trappist", "rating": 3.8}'
 
 curl -X POST 'http://microcks-devops.app.88.198.65.4.nip.io/dynarest/Beer%20Catalog%20API/0.1/beer' -H 'Content-type: application/json' -d '{"name": "Weissbier", "country": "Germany", "type": "Wheat", "rating": 4.1}'
+
+curl -X POST 'http://microcks-devops.apps.ocp.loc/dynarest/Beer%20Catalog%20API/0.1/beer' -H 'Content-type: application/json' -d '{"name": "Rodenbach", "country": "Belgium", "type": "Brown ale", "rating": 4.2}'
+
+curl -X POST 'http://microcks-devops.apps.ocp.loc/dynarest/Beer%20Catalog%20API/0.1/beer' -H 'Content-type: application/json' -d '{"name": "Westmalle Triple", "country": "Belgium", "type": "Trappist", "rating": 3.8}'
+
+curl -X POST 'http://microcks-devops.apps.ocp.loc/dynarest/Beer%20Catalog%20API/0.1/beer' -H 'Content-type: application/json' -d '{"name": "Weissbier", "country": "Germany", "type": "Wheat", "rating": 4.1}'
 ```
 
 # Query mocks
 
 ```
 curl -X GET 'http://microcks-devops.app.88.198.65.4.nip.io/dynarest/Beer%20Catalog%20API/0.1/beer/'
+curl -X GET 'http://microcks-devops.apps.ocp.loc/dynarest/Beer%20Catalog%20API/0.1/beer/'
 ```
 
 # Demo 2 : Create an API from contract and create mocks

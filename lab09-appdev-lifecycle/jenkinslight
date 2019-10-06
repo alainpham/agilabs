@@ -1,0 +1,57 @@
+node('maven') {
+            /*env.devns = "${DEV_NS}";
+            /env.prodns = "${PROD_NS}";
+            env.appname = "${APPLICATION_NAME}";*/
+            env.source = "apps";
+            env.target = "apps-prod";
+            stage ('promotionCheck'){
+              def userInput = input( id: "userInput", message: "Promote to PROD?", parameters:
+                [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
+              print 'promotionCheck'
+            }
+            stage('tagForProd'){
+                openshiftTag alias: 'false', destStream: 'beer-api', srcTag: "latest",
+                 destinationNamespace: 'apps-prod', namespace: 'apps',
+                 srcStream: 'beer-api', destTag: 'ready-for-prod', verbose: 'false'
+            }
+            stage('deployOnNewTarget'){
+                sh "oc project apps-prod"
+                sh "oc get route beer-api -o template --template='{{ .spec.to.name }}'> route-target"
+                
+                    // Determine which is of green or blue is active
+                    def newTarget = getNewTarget()
+                    def currentTarget = getCurrentTarget()
+                    
+                     // Trigger a new deployment
+                        openshiftDeploy deploymentConfig: "${newTarget}", namespace: 'apps-prod'
+                        openshiftVerifyDeployment deploymentConfig: "${newTarget}", namespace: 'apps-prod'
+
+                    
+                    input "Switch Production from ${currentTarget} to ${newTarget} ?"
+                    sh "oc patch route/beer-api --patch '{\"spec\":{\"to\":{\"name\":\"${newTarget}\"}}}'"
+
+            }
+            
+          }
+          
+          
+          // Get the current target of the OpenShift production route
+// Note: the route-target file is created earlier by the "oc get route" command
+def getCurrentTarget() {
+  def currentTarget = readFile 'route-target'
+  return currentTarget
+}
+
+// Flip/flop target (green goes blue and vice versa)
+def getNewTarget() {
+  def currentTarget = getCurrentTarget()
+  def newTarget = ""
+  if (currentTarget == "beer-api-blue") {
+      newTarget = "beer-api-green"
+  } else if (currentTarget == "beer-api-green") {
+      newTarget = "beer-api-blue"
+  } else {
+    echo "OOPS, wrong target"
+  }
+  return newTarget
+}

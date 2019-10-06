@@ -1,45 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:cxf="http://camel.apache.org/schema/cxf"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
-       ">
-
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd        ">
     <camelContext id="lab01-basic-service" xmlns="http://camel.apache.org/schema/spring">
-
-		<rest id="restsvc"  path="/restsvc">
-			<get id="get-ping" uri="/ping">
-				<route id="get-pring-route">
-					<setBody>
-						<method ref="myTransformer" />
-					</setBody>
-				</route>
-			</get>
-		</rest>
-
-        <route id="http-receiver">
-            <from id="http-receiver-starter" uri="servlet:choice" />
-            <choice >
-                <when >
-                    <xpath>/msg = 'random'</xpath>
+        <rest id="restsvc" path="/restsvc">
+            <get id="get-ping" uri="/ping">
+                <route id="get-pring-route">
                     <setBody>
-                        <simple>random(0,10)</simple>
+                        <method ref="myTransformer"/>
+                    </setBody>
+                </route>
+            </get>
+        </rest>
+        <route id="_route1">
+            <from id="_from1" uri="servlet:choice"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <xpath>/msg = 'random'</xpath>
+                    <setBody id="_setBody1">
+                        <simple>random(0,100)</simple>
                     </setBody>
                 </when>
-                <otherwise>
-                    <setBody >
+                <otherwise id="_otherwise1">
+                    <setBody id="_setBody2">
                         <constant>0</constant>
                     </setBody>
                 </otherwise>
             </choice>
-            <log message="${body}"/>
+            <log id="_log1" message="Hello ${body}"/>
         </route>
-        
     </camelContext>
-
 </beans>

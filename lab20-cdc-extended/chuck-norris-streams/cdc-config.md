@@ -33,6 +33,7 @@ oc exec -i $(oc get pods | grep debezium-connect | awk '{print $1}') -- curl -X 
     "name": "rental-event-connector",
     "config": {
         "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+        "snapshot.mode":  "when_needed",
         "tasks.max": "1",
         "database.hostname": "mysqldebezium.chuck-movie-rental.svc.cluster.local",
         "database.port": "3306",
