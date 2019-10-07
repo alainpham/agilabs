@@ -13,6 +13,7 @@ import net.logstash.logback.argument.StructuredArgument;
 
 import static net.logstash.logback.argument.StructuredArguments.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
 public class EventLogger {
 
     private StructuredArgument safeBody(Object body){
-        if (body instanceof Stream){
+        if (!(body instanceof Serializable ) ){
             return null;
         }else{
             return kv("body",body);
