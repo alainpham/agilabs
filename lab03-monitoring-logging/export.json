@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "AW2cvqjnqZVBoCGmLY3x",
+    "_type": "search",
+    "_source": {
+      "title": "appevents",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "elapsed",
+        "state",
+        "camel.breadcrumbId",
+        "kubernetes.labels.app"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"AW2cuOk8qZVBoCGmLY3v\",\"highlightAll\":true,\"version\":true,\"query\":{\"match_all\":{}},\"filter\":[{\"meta\":{\"index\":\"AW2cuOk8qZVBoCGmLY3v\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"exists\",\"key\":\"camel.routeId\",\"value\":\"exists\"},\"exists\":{\"field\":\"camel.routeId\"},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"AW2cuOk8qZVBoCGmLY3v\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"exists\",\"key\":\"state\",\"value\":\"exists\"},\"exists\":{\"field\":\"state\"},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "AW2jyXVrhkEyr9f_mIQL",
+    "_type": "search",
+    "_source": {
+      "title": "execution-times",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "camel.contextId",
+        "elapsed",
+        "state"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"AW2cuOk8qZVBoCGmLY3v\",\"highlightAll\":true,\"version\":true,\"query\":{\"match_all\":{}},\"filter\":[{\"meta\":{\"index\":\"AW2cuOk8qZVBoCGmLY3v\",\"type\":\"phrases\",\"key\":\"state\",\"value\":\"error, success\",\"params\":[\"error\",\"success\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"state\":\"error\"}},{\"match_phrase\":{\"state\":\"success\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "AW2j0E-UhkEyr9f_mIQN",
+    "_type": "visualization",
+    "_source": {
+      "title": "execution-times-histogram",
+      "visState": "{\"title\":\"execution-times-histogram\",\"type\":\"histogram\",\"params\":{\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"truncate\":100},\"title\":{\"text\":\"elapsed\"}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Count\"}}],\"seriesParams\":[{\"show\":\"true\",\"type\":\"histogram\",\"mode\":\"stacked\",\"data\":{\"label\":\"Count\",\"id\":\"1\"},\"valueAxis\":\"ValueAxis-1\",\"drawLinesBetweenPoints\":true,\"showCircles\":true}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"times\":[],\"addTimeMarker\":false,\"type\":\"histogram\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"elapsed\",\"interval\":50,\"extended_bounds\":{}}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"camel.routeId.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\",\"row\":true}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "AW2jyXVrhkEyr9f_mIQL",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  }
+]
