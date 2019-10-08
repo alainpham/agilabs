@@ -5,6 +5,7 @@ From within the `chuck-movie-rental` OpenShift project.
 
 ```
 # Deploy a single instance of Kafka Connect with no plug-in installed on HA persistent Kafka
+oc project amq-streams
 oc new-app strimzi-connect-s2i --name=debezium-connect -p CLUSTER_NAME=debezium -p KAFKA_CONNECT_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.amq-streams.svc.cluster.local:9092 -p KAFKA_CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1 -p KAFKA_CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1 -p KAFKA_CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1
 ```
 
