@@ -10,7 +10,7 @@ This project shows you how to build a basic service using Fuse.
 	
 * Create a Fuse project
 	
-		mvn archetype:generate -DarchetypeGroupId=org.apache.camel -DarchetypeArtifactId=camel-archetype-spring-boot-fuse-7-bom -DarchetypeVersion=7.1.0
+		mvn archetype:generate -DarchetypeGroupId=org.apache.camel -DarchetypeArtifactId=camel-archetype-spring-boot-fuse-7-bom -DarchetypeVersion=7
 	
 * Add this route to camelcontext
 

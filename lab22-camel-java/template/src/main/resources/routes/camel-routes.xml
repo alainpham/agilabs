@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<routes xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <!-- here we define the bar route -->
+    
+    <!-- warning this does not handle streaming well -->
+    <route id="static-content">
+        <from uri="undertow:http://{{server.address}}:{{server.port}}/?matchOnUriPrefix=true"/>
+        <log message="${headers}"/>
+        <setHeader headerName="fileName">
+            <simple>{{static.location}}${headers.CamelHttpUri}</simple>
+        </setHeader>
+        <process ref="fileUtils"/>
+        <log message="${headers}"/>
+        <log message="${exchange.properties}"></log>
+    </route>
+    
+    <route>
+        <from uri="undertow:http://{{server.address}}:{{server.port}}/test?matchOnUriPrefix=true" />
+        <setBody>
+            <constant>OK!</constant>
+        </setBody>
+    </route>
+
+</routes>

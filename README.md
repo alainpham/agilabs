@@ -28,28 +28,28 @@
 
 List of images to be imported. Replace LOCAL with your own local repo ie : `docker-registry-default.apps.192.168.0.1.nip.io`
 
-|Image from RH registry                                   |Local Openshift Registry Name                    |
-|---------------------------------------------------------|-------------------------------------------------|
-|docker://registry.redhat.io/fuse7/fuse-java-openshift:1.4|docker://LOCAL/openshift/fuse7-java-openshift:1.4|
-|docker://registry.redhat.io/fuse7/fuse-console:1.4       |docker://LOCAL/openshift/fuse7-console:1.4       |
-|docker://registry.redhat.io/amq7/amq-broker:7.4          |docker://LOCAL/openshift/amq-broker:7.4          |
-|docker://registry.redhat.io/amq7/amq-interconnect:1.5    |docker://LOCAL/openshift/amq-interconnect:1.5    |
-|docker://registry.redhat.io/amq7/amq-online-1-standard-controller:1.2|docker://LOCAL/openshift/amq-online-1-standard-controller:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-agent:1.2|docker://LOCAL/openshift/amq-online-1-agent:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-broker-plugin:1.2|docker://LOCAL/openshift/amq-online-1-broker-plugin:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-topic-forwarder:1.2|docker://LOCAL/openshift/amq-online-1-topic-forwarder:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-mqtt-gateway:1.2|docker://LOCAL/openshift/amq-online-1-mqtt-gateway:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-mqtt-lwt:1.2|docker://LOCAL/openshift/amq-online-1-mqtt-lwt:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-address-space-controller:1.2|docker://LOCAL/openshift/amq-online-1-address-space-controller:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-api-server:1.2|docker://LOCAL/openshift/amq-online-1-api-server:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-controller-manager:1.2|docker://LOCAL/openshift/amq-online-1-controller-manager:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-none-auth-service:1.2|docker://LOCAL/openshift/amq-online-1-none-auth-service:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-auth-plugin:1.2|docker://LOCAL/openshift/amq-online-1-auth-plugin:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-console-init:1.2|docker://LOCAL/openshift/amq-online-1-console-init:1.2|
-|docker://registry.redhat.io/amq7/amq-online-1-console-httpd:1.2|docker://LOCAL/openshift/amq-online-1-console-httpd:1.2|
-|docker://registry.redhat.io/amq7/amq-streams-operator:1.2.0|docker://LOCAL/openshift/amq-streams-operator:1.2.0|
-|docker://registry.redhat.io/amq7/amq-streams-bridge:1.2.0|docker://LOCAL/openshift/amq-streams-bridge:1.2.0|
-|docker://registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0|docker://LOCAL/openshift/amq-streams-kafka-22:1.2.0|
+|Image from RH registry                                   					|Local Openshift Registry Name                    					|
+|---------------------------------------------------------------------------|-------------------------------------------------------------------|
+|docker://registry.redhat.io/fuse7/fuse-java-openshift:1.5					|docker://LOCAL/openshift/fuse7-java-openshift:1.5					|
+|docker://registry.redhat.io/fuse7/fuse-console:1.5       					|docker://LOCAL/openshift/fuse7-console:1.5       					|
+|docker://registry.redhat.io/amq7/amq-broker:7.5          					|docker://LOCAL/openshift/amq-broker:7.5          					|
+|docker://registry.redhat.io/amq7/amq-interconnect:1.6    					|docker://LOCAL/openshift/amq-interconnect:1.6    					|
+|docker://registry.redhat.io/amq7/amq-online-1-standard-controller:1.3		|docker://LOCAL/openshift/amq-online-1-standard-controller:1.3		|
+|docker://registry.redhat.io/amq7/amq-online-1-agent:1.3					|docker://LOCAL/openshift/amq-online-1-agent:1.3					|
+|docker://registry.redhat.io/amq7/amq-online-1-broker-plugin:1.3			|docker://LOCAL/openshift/amq-online-1-broker-plugin:1.3			|
+|docker://registry.redhat.io/amq7/amq-online-1-topic-forwarder:1.3			|docker://LOCAL/openshift/amq-online-1-topic-forwarder:1.3			|
+|docker://registry.redhat.io/amq7/amq-online-1-mqtt-gateway:1.3				|docker://LOCAL/openshift/amq-online-1-mqtt-gateway:1.3				|
+|docker://registry.redhat.io/amq7/amq-online-1-mqtt-lwt:1.3					|docker://LOCAL/openshift/amq-online-1-mqtt-lwt:1.3					|
+|docker://registry.redhat.io/amq7/amq-online-1-address-space-controller:1.3	|docker://LOCAL/openshift/amq-online-1-address-space-controller:1.3	|
+|docker://registry.redhat.io/amq7/amq-online-1-api-server:1.3				|docker://LOCAL/openshift/amq-online-1-api-server:1.3				|
+|docker://registry.redhat.io/amq7/amq-online-1-controller-manager:1.3		|docker://LOCAL/openshift/amq-online-1-controller-manager:1.3		|
+|docker://registry.redhat.io/amq7/amq-online-1-none-auth-service:1.3		|docker://LOCAL/openshift/amq-online-1-none-auth-service:1.3		|
+|docker://registry.redhat.io/amq7/amq-online-1-auth-plugin:1.3				|docker://LOCAL/openshift/amq-online-1-auth-plugin:1.3				|
+|docker://registry.redhat.io/amq7/amq-online-1-console-init:1.3				|docker://LOCAL/openshift/amq-online-1-console-init:1.3				|
+|docker://registry.redhat.io/amq7/amq-online-1-console-httpd:1.3			|docker://LOCAL/openshift/amq-online-1-console-httpd:1.3			|
+|docker://registry.redhat.io/amq7/amq-streams-operator:1.3.0				|docker://LOCAL/openshift/amq-streams-operator:1.3.0				|
+|docker://registry.redhat.io/amq7/amq-streams-bridge:1.3.0					|docker://LOCAL/openshift/amq-streams-bridge:1.3.0					|
+|docker://registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0				|docker://LOCAL/openshift/amq-streams-kafka-23:1.3.0				|
 
 ### Add trusted certificate for openshift image registry manipulations on distant machines
 ```
@@ -84,7 +84,7 @@ echo $ocuser:$octoken
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse7-
@@ -112,7 +112,7 @@ Credentials to registry.redhat.io are required here to use these enterprise imag
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetsfx=-ui
@@ -138,7 +138,7 @@ Credentials to registry.redhat.io are required here to use these enterprise imag
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse-
@@ -163,7 +163,7 @@ Credentials to registry.redhat.io are required here to use these enterprise imag
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="7.4"
+tag="7.5"
 ns="amq7/"
 imglist="amq-broker"
 
@@ -187,7 +187,7 @@ Credentials to registry.redhat.io registry are required here to use these enterp
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.5"
+tag="1.6"
 ns="amq7/"
 imglist="amq-interconnect"
 
@@ -210,9 +210,9 @@ Credentials to registry.redhat.io are required here to use these enterprise imag
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.2.0"
+tag="1.3.0"
 ns="amq7/"
-imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-22"
+imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-23"
 
 for img in $imglist
 do
@@ -231,7 +231,7 @@ done
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.2"
+tag="1.3"
 ns="amq7/"
 imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
 
@@ -295,6 +295,8 @@ done
 
 ### Fuse online images with Skopeo
 
+/!\ WIP doesn't work as offline install at the moment
+
 ```
 srcreg="docker://registry.redhat.io/"
 ns="fuse7/"
@@ -348,7 +350,7 @@ done
 
 ```
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse7-
@@ -364,7 +366,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetsfx=-ui
@@ -377,7 +379,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse-
@@ -390,7 +392,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="7.4"
+tag="7.5"
 ns="amq7/"
 imglist="amq-broker"
 
@@ -403,7 +405,7 @@ done
 
 
 srcreg="docker://registry.redhat.io/"
-tag="1.5"
+tag="1.6"
 ns="amq7/"
 imglist="amq-interconnect"
 
@@ -416,9 +418,9 @@ done
 
 
 srcreg="docker://registry.redhat.io/"
-tag="1.2.0"
+tag="1.3.0"
 ns="amq7/"
-imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-22"
+imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-23"
 
 for img in $imglist
 do
@@ -429,7 +431,7 @@ done
 
 
 srcreg="docker://registry.redhat.io/"
-tag="1.2"
+tag="1.3"
 ns="amq7/"
 imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
 
@@ -460,7 +462,10 @@ do
  echo $srcreg$ns$img:$tag
  skopeo copy --screds $user:$pass $srcreg$ns$img:$tag oci:./target:$ns$img:$tag
 done
+```
 
+/!\WIP does not work at the moment
+```
 
 srcreg="docker://registry.redhat.io/"
 ns="fuse7/"
@@ -489,7 +494,7 @@ skopeo copy --screds $user:$pass docker://registry.access.redhat.com/jboss-amq-6
 ```
 
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse7-
@@ -502,7 +507,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetsfx=-ui
@@ -515,7 +520,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.4"
+tag="1.5"
 ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse-
@@ -528,7 +533,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="7.4"
+tag="7.5"
 ns="amq7/"
 imglist="amq-broker"
 
@@ -539,7 +544,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.5"
+tag="1.6"
 ns="amq7/"
 imglist="amq-interconnect"
 
@@ -550,7 +555,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.2.0"
+tag="1.3.0"
 ns="amq7/"
 imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-22"
 
@@ -561,7 +566,7 @@ do
 done
 
 srcreg="docker://registry.redhat.io/"
-tag="1.2"
+tag="1.3"
 ns="amq7/"
 imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
 
@@ -593,7 +598,11 @@ do
  skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
 done
 
+```
 
+
+
+```
 srcreg="docker://registry.redhat.io/"
 ns="fuse7/"
 imglist="fuse-ignite-server:1.4-14 fuse-ignite-ui:1.4-6 fuse-ignite-meta:1.4-13 fuse-ignite-s2i:1.4-13 fuse-online-operator:1.4-11"

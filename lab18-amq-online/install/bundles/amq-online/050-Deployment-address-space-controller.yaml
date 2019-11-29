@@ -78,22 +78,22 @@ spec:
         - name: IMAGE_PULL_POLICY
           value: Always
         - name: ROUTER_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-interconnect:1.5
+          value: registry.redhat.io/amq7/amq-interconnect:1.6
         - name: STANDARD_CONTROLLER_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-standard-controller:1.2
+          value: registry.redhat.io/amq7/amq-online-1-standard-controller:1.3
         - name: AGENT_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-agent:1.2
+          value: registry.redhat.io/amq7/amq-online-1-agent:1.3
         - name: BROKER_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-broker:7.4
+          value: registry.redhat.io/amq7/amq-broker:7.5
         - name: BROKER_PLUGIN_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-broker-plugin:1.2
+          value: registry.redhat.io/amq7/amq-online-1-broker-plugin:1.3
         - name: TOPIC_FORWARDER_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-topic-forwarder:1.2
+          value: registry.redhat.io/amq7/amq-online-1-topic-forwarder:1.3
         - name: MQTT_GATEWAY_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-mqtt-gateway:1.2
+          value: registry.redhat.io/amq7/amq-online-1-mqtt-gateway:1.3
         - name: MQTT_LWT_IMAGE
-          value: docker-registry.default.svc:5000/openshift/amq-online-1-mqtt-lwt:1.2
-        image: docker-registry.default.svc:5000/openshift/amq-online-1-address-space-controller:1.2
+          value: registry.redhat.io/amq7/amq-online-1-mqtt-lwt:1.3
+        image: registry.redhat.io/amq7/amq-online-1-address-space-controller:1.3
         imagePullPolicy: Always
         livenessProbe:
           httpGet:

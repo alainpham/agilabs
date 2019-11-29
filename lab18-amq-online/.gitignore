@@ -1,0 +1,6 @@
+**/install
+**/examples
+**/certificate.crt
+**/trust.p12
+**/scripts
+**/ansible

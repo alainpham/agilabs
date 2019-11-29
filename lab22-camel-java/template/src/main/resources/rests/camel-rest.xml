@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rests xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <rest id="restsvc" path="/restsvc" bindingMode="off" produces="application/json">
+        <get id="getPing" uri="/ping">
+            <route id="getPingRoute">
+                <setBody>
+                    <constant>{"msg" : "ok"}</constant>
+                </setBody>
+            </route>
+        </get>
+    </rest>
+</rests>

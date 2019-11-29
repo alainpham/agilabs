@@ -29,7 +29,7 @@ This workshop aims at showing attendees how to do basic deploy/manage, secure, a
 
 - Openshift Container Platform 3.11
 - oc client 3.11
-- amq-streams-1.2.0-ocp-install-examples.zip from [access.redhat.com](https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=70451)
+- amq-streams-1.3.0-ocp-install-examples.zip from [access.redhat.com](https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=74481)
 
 ## AMQ Streams components and basic concepts 
 
@@ -43,7 +43,7 @@ For AMQ Streams we will be creating our own resources to maintain the topology a
 
 Responsible for deploying and managing Apache Kafka clusters within OpenShift cluster. 
 
-![Cluster Operator](https://access.redhat.com/webassets/avalon/d/Red_Hat_AMQ-7.3-Using_AMQ_Streams_on_OpenShift_Container_Platform-en-US/images/5b357ee35dba180b3aea27d166e4e08a/cluster_operator.png)
+![Cluster Operator](https://access.redhat.com/webassets/avalon/d/Red_Hat_AMQ-7.3-Using_AMQ_Streams_on_OpenShift_Container_Platform-en-US/images/a48fd4be1526fc37853a46ddfdaf9daa/cluster-operator.png)
 
 The Cluster Operator can be configured to watch for more OpenShift projects or Kubernetes namespaces. Cluster Operator watches the following resources that are defined by Custom Resource Definitions (CRDs) :
 
@@ -104,7 +104,7 @@ cluster-admin-0    /cluster-admin    YOUR_USER
 Unzip the downloaded script package 
 
 ```
-unzip amq-streams-1.2.0-ocp-install-examples.zip
+unzip amq-streams-1.3.0-ocp-install-examples.zip
 ```
 ### Cluster Management
 

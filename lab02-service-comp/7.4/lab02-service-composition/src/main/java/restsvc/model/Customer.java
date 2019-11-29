@@ -2,6 +2,9 @@ package restsvc.model;
 
 import io.swagger.annotations.ApiModel;
 import javax.validation.constraints.*;
+
+import java.io.Serializable;
+
 import javax.validation.Valid;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -18,8 +21,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
   * The root of the customer type's schema.
  **/
 @ApiModel(description="The root of the customer type's schema.")
-public class Customer  {
+public class Customer  implements Serializable{
   
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
   @ApiModelProperty(value = "")
   private String id = null;
 

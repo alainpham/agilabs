@@ -41,13 +41,7 @@ spec:
           value: kube-system
         - name: APISERVER_ROUTE_NAME
           value: restapi
-        - name: STANDARD_AUTHSERVICE_CONFIG_NAME
-          value: keycloak-config
-        - name: STANDARD_AUTHSERVICE_CREDENTIALS_SECRET_NAME
-          value: keycloak-credentials
-        - name: STANDARD_AUTHSERVICE_CERT_SECRET_NAME
-          value: standard-authservice-cert
-        image: docker-registry.default.svc:5000/openshift/amq-online-1-api-server:1.2
+        image: registry.redhat.io/amq7/amq-online-1-api-server:1.3
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
