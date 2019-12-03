@@ -34,7 +34,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: prometheus-server-userXX
+  name: prometheus-server
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -42,7 +42,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prometheus-server
-  namespace: amq-streams-userXX
+  namespace: amq-streams
 
 ---
 apiVersion: extensions/v1beta1
