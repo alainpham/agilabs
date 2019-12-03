@@ -9,14 +9,14 @@
     <name>kafka-consumer</name>
     <description>kafka-consumer</description>
     <properties>
-        <fuse.version>7.4.0.fuse-740036-redhat-00002</fuse.version>
-		<version.org.apache.camel>2.21.0.fuse-740039-redhat-00001</version.org.apache.camel>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <swagger.ui.version>3.23.5</swagger.ui.version>
-        <swagger.codegen.version>3.0.10</swagger.codegen.version>
+        <fuse.version>7.5.0.fuse-750029-redhat-00002</fuse.version>
+		<version.org.apache.camel>2.21.0.fuse-750033-redhat-00001</version.org.apache.camel>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <swagger.ui.version>3.24.3</swagger.ui.version>
+        <swagger.codegen.version>2.4.10</swagger.codegen.version>
+        <logstash.encoder.version>6.2</logstash.encoder.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -120,7 +120,10 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-kafka-starter</artifactId>
         </dependency>
-
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-undertow-starter</artifactId>
+		</dependency>
     </dependencies>
 
 

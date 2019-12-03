@@ -1,13 +1,45 @@
 <html>
 <header>
     <title>kafka-consumer</title>
+    <script src="js/plotly-latest.min.js"></script>
 </header>
 
 <body>
    <h1>Welcome to the kafka-consumer interface</h1>
-   <p><a href="camel/ping">Ping</a></p>
-   <p><a href="camel/api-docs">Swagger Definition</a></p>
-   <p><a href="/webjars/swagger-ui/3.22.2/index.html?url=/camel/api-docs">Swagger UI</a></p>
+   <h2>Last message received : <span id="msg-content"> </span></h2>
+   <div id="plot" style="width:800px;height:300px;"></div>
+
+
+   <script>
+
+    var server = ((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.hostname + ":7123/camel/events";
+    var plot = document.getElementById('plot');
+    var receivedMsg = [];
+    
+    let socket = new WebSocket(server);
+    socket.onmessage = function(event) {
+        console.log(event.data);
+        document.getElementById("msg-content").innerHTML = event.data;
+        receivedMsg.push(event.data);
+        if (receivedMsg.length > 20) {
+          receivedMsg.shift();
+        }
+        Plotly.update(plot, {
+          y: [receivedMsg]
+        });
+    };
+
+    var style = {
+      margin: { t: 0 }
+    };
+    var data = [{
+      y: [0]
+    }];
+
+    Plotly.plot(plot, data, style);
+
+</script>
+
 </body>
 
 </html>

@@ -22,22 +22,12 @@
 			</get>
 		</rest>
 
-        <route id="http-receiver">
-            <from id="http-receiver-starter" uri="servlet://ping" />
-            <setHeader headerName="Content-Type">
-                <constant>application/json</constant>
-            </setHeader>
-            <setBody>
-                <constant>{"msg" : "HELLO"}</constant>
-            </setBody>
-            <to uri="kafka:my-topic"></to>
-            <log message="${body}"></log>
+        <route id="kafka-consumer-route">
+            <from id="kafka-consumer-starter" uri="kafka:my-topic"/>
+            <log message="${body}"/>
+            <to uri="undertow:ws://{{server.address}}:7123/camel/events?sendToAll=true"></to>
         </route>
 
-        <route id="kafka-consumer-sample-route">
-            <from id="kafka-consumer-sample-route-starter" uri="kafka:my-topic?groupId=secure-group"/>
-            <log message="${body}"/>
-        </route>
     </camelContext>
 
 </beans>
