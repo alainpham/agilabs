@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:cxf="http://camel.apache.org/schema/cxf" xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+
+    <camelContext id="lab02-service-composition-mock-fuse" xmlns="http://camel.apache.org/schema/spring">
+
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <handled>
+                <constant>true</constant>
+            </handled>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>500</constant>
+            </setHeader>
+            <to uri="bean:eventLogger?method=logElapsedTimeAndBody" />
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody>
+                    <simple>{"error" : "${exception.message}"}</simple>
+                </setBody>
+        </onException>
+
+        <rest id="customersvcmock">
+            <get id="getCustomer" outType="agilabs.Customer" produces="application/json" uri="/customer/{id}">
+                <to uri="direct:getCustomer" />
+            </get>
+        </rest>
+
+        <route id="getCustomerRoute">
+            <from id="getCustomerRouteStarter" uri="direct:getCustomer" />
+            <setBody>
+                <simple>null</simple>
+            </setBody>
+            <to uri="bean:eventLogger?method=logStartAndBody" />
+            <to uri="sql:select * from customer where id=:#${header.id}?outputType=SelectOne&amp;outputClass=agilabs.Customer" />
+            <choice>
+                <when>
+                    <simple>${body} == null</simple>
+                    <throwException exceptionType="java.lang.Exception" message="${header.id} not found" />
+                </when>
+            </choice>
+            <to uri="bean:eventLogger?method=logElapsedTimeAndBody" />
+        </route>
+    </camelContext>
+
+</beans>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:cxf="http://camel.apache.org/schema/cxf" xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       ">
+
+    <camelContext id="lab02-service-composition" xmlns="http://camel.apache.org/schema/spring" useMDCLogging="true">
+
+        <hystrixConfiguration circuitBreakerEnabled="true" executionTimeoutInMilliseconds="1000" id="hystrixConfig" />
+        <rest id="dummyRestSvc" path="/restsvc">
+            <get id="getPing" uri="/ping">
+                <route>
+                    <setBody>
+                        <method ref="myTransformer" />
+                    </setBody>
+                </route>
+            </get>
+        </rest>
+
+        <route id="http-receiver">
+            <from id="http-receiver-starter" uri="servlet://ping" />
+            <setHeader headerName="Content-Type" >
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody >
+                <constant>{"msg" : "HELLO"}</constant>
+            </setBody>
+        </route>
+
+        
+        <route id="getCustomerRoute">
+            <from id="getCustomerStarter" uri="direct:getCustomer" />
+            <to  uri="direct:callRestSvc" />
+            <enrich id="enrichWithSql" strategyRef="mapCustomer">
+                <constant>sql:select id,status from customerstatus where id=:#${header.id}?outputType=SelectOne&amp;outputClass=restsvc.model.Customer</constant>
+            </enrich>
+        </route>
+
+
+        <route id="callRestSvc">
+            <from  uri="direct:callRestSvc" />
+            <throttle asyncDelayed="true"  timePeriodMillis="1000">
+                <constant>3</constant>
+                <setHeader headerName="CamelHttpMethod" >
+                    <constant>GET</constant>
+                </setHeader>
+                <setHeader headerName="CamelHttpPath" >
+                    <simple>/camel/customer/${header.id}</simple>
+                </setHeader>
+                <to  uri="{{backend.url}}" />
+                <unmarshal >
+                    <json library="Jackson" unmarshalTypeName="remotesvc.model.Customer" />
+                </unmarshal>
+                <setProperty  propertyName="callRestSvc.output">
+                    <simple>${body}</simple>
+                </setProperty>
+            </throttle>
+        </route>
+
+        <route id="getCustomerWithCBRoute">
+            <from  uri="direct:getCustomerCB" />
+            <to  uri="bean:eventLogger?method=logStartAndBody" />
+            <hystrix hystrixConfigurationRef="hystrixConfig" id="getCustomerRouteCB">
+                <to  uri="direct:getCustomer" />
+                <to  uri="bean:eventLogger?method=logElapsedTimeAndBody" />
+                <onFallback >
+                    <to  uri="direct:generic-fallback-route" />
+                </onFallback>
+            </hystrix>
+        </route>
+        
+        <route id="generic-fallback-route">
+            <from  uri="direct:generic-fallback-route" />
+            <setHeader headerName="CamelHttpResponseCode" >
+                <constant>500</constant>
+            </setHeader>
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <setBody >
+                <simple>{"error" : "REQUEST FAILED :  ${property.CamelExceptionCaught}"}</simple>
+            </setBody>
+            <to  uri="bean:eventLogger?method=logElapsedTimeAndBody" />
+        </route>
+
+    </camelContext>
+
+</beans>

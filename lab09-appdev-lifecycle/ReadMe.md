@@ -1,6 +1,12 @@
 # Install stuff
 ```
-BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003
+
+
+
+
+
+BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-750056-redhat-00004
+oc create -n openshift -f ${BASEURL}/fis-image-streams.json
 oc create -n openshift -f ${BASEURL}/fuse-apicurito.yml
 oc replace -f ${BASEURL}/fuse-apicurito.yml -n openshift
 
@@ -9,7 +15,7 @@ oc new-project devops
 oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.ocp.loc
 oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.88.198.65.4.nip.io
 
-oc new-app jenkins-persistent -p MEMORY_LIMIT=1Gi -p VOLUME_CAPACITY=4Gi
+oc new-app jenkins-persistent -p MEMORY_LIMIT=2Gi -p VOLUME_CAPACITY=4Gi
 oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:devops:jenkins
 
 ```

@@ -1,0 +1,65 @@
+# This is not a recommended configuration, and further support should be available
+# from the Prometheus and Grafana communities.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: docker-registry.default.svc:5000/openshift/grafana:v3.11
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: grafana
+          containerPort: 3000
+          protocol: TCP
+        volumeMounts:
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+        - name: grafana-logs
+          mountPath: /var/lib/grafana/logs
+        - name: grafana-config
+          mountPath: /etc/grafana/
+        args:
+          - '-config=/etc/grafana/grafana.ini'
+      volumes:
+      - name: grafana-data
+        emptyDir: {}
+      - name: grafana-logs
+        emptyDir: {}
+      - name: grafana-config
+        configMap:
+          name: grafana-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  ports:
+  - name: grafana
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    name: grafana
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+data:
+  grafana.ini: |-
+    [paths]
+    data = /var/lib/grafana
+    logs = /var/lib/grafana/logs
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning

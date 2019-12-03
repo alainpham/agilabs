@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: quarkus-kafka-consumer-secure
+  labels:
+    app:  quarkus-kafka-client
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  quarkus-kafka-client
+        name:  quarkus-kafka-consumer-secure
+    spec:
+      initContainers:
+        - name: tls-init
+          image: quay.io/alainpham/java-tls-init:latest
+          env:
+            - name: CA_CRT
+              valueFrom:
+                secretKeyRef:
+                  name: my-cluster-cluster-ca-cert
+                  key: ca.crt
+            - name: TRUSTSTORE_FILE
+              value: /tls-certs/truststore.p12
+            - name: TRUSTSTORE_PASSWORD
+              value: password
+          volumeMounts:
+            - mountPath: /tls-certs
+              name: tls-certs
+      containers:
+        - name: quarkus-kafka-consumer-secure
+          image: quay.io/alainpham/quarkus-kafka-consumer-jvm:latest
+          env:
+            - name: MP_MESSAGING_INCOMING_EVENTS_TOPIC
+              value: my-topic
+            - name: MP_MESSAGING_INCOMING_EVENTS_VALUE_DESERIALIZER
+              value: org.apache.kafka.common.serialization.StringDeserializer
+            - name: MP_MESSAGING_INCOMING_EVENTS_BOOTSTRAP_SERVERS
+              value: "my-cluster-kafka-bootstrap:9093"
+            - name: MP_MESSAGING_INCOMING_EVENTS_SECURITY_PROTOCOL
+              value: SASL_SSL
+            - name: MP_MESSAGING_INCOMING_EVENTS_SASL_MECHANISM
+              value: SCRAM-SHA-512
+            - name: MP_MESSAGING_INCOMING_EVENTS_SASL_JAAS_CONFIG
+              value: org.apache.kafka.common.security.scram.ScramLoginModule required username='${KAFKA_USER}' password='${KAFKA_PASSWORD}';
+            - name: MP_MESSAGING_INCOMING_EVENTS_SSL_TRUSTSTORE_LOCATION
+              value: /tls-certs/truststore.p12
+            - name: MP_MESSAGING_INCOMING_EVENTS_SSL_TRUSTSTORE_TYPE
+              value: PKCS12
+            - name: MP_MESSAGING_INCOMING_EVENTS_SSL_TRUSTSTORE_PASSWORD
+              value: password
+            - name: KAFKA_USER
+              value: secure-topic-reader
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: secure-topic-reader
+          volumeMounts:
+            - mountPath: /tls-certs
+              name: tls-certs
+      volumes:
+        - name: tls-certs
+          emptyDir:
+            medium: Memory

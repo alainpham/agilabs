@@ -171,25 +171,25 @@ Observe the create of different components in this order:
 To test everything run a consumer:
 
 ```
-oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
 Alternatively from the local registry
 
 ```
-oc run kafka-consumer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+oc run kafka-consumer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
 Run a producer
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 Alternatively from the local registry
 
 ```
-oc run kafka-producer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=docker-registry.default.svc:5000/openshift/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 Now let's send some ascii Art :)
@@ -308,11 +308,13 @@ Watch the modifications roll out.
 Extract secrets and import into a trust store to trust the broker public key.
 
 ```
-oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
-oc extract secret/my-cluster-clients-ca-cert --keys=ca.crt --to=- >execs/config/certificate.crt
+oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/producer/config/certificate.crt
+oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/consumer/config/certificate.crt
 
-rm execs/config/trust.p12
-keytool -importcert -keystore execs/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/config/certificate.crt -noprompt
+rm execs/consumer/config/trust.p12
+rm execs/producer/config/trust.p12
+keytool -importcert -keystore execs/producer/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/producer/config/certificate.crt -noprompt
+keytool -importcert -keystore execs/consumer/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/consumer/config/certificate.crt -noprompt
 ```
 
 Get the route of your cluster
@@ -321,10 +323,11 @@ Get the route of your cluster
 oc get route my-cluster-kafka-bootstrap -o 'jsonpath={.spec.host}'
 ```
 
-Configure it in the file `execs/config/application.properties`
+Configure it in the file `execs/producer/config/application.properties`
 
 ```
-vi execs/config/application.properties
+vi execs/producer/config/application.properties
+vi execs/consumer/config/application.properties
 
 
 mp.messaging.incoming.events.bootstrap.servers=<YOUR_ROUTE>:443
@@ -334,13 +337,13 @@ mp.messaging.incoming.events.security.protocol=SSL
 Run the consumer. FYI, this an app built with Quarkus
 
 ```
-cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
+cd execs/consumer ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 ```
 
 Run a producer to test it
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 ### Activate authentication and authorization on the broker
 
@@ -410,7 +413,7 @@ cd execs ; java -jar quarkus-kafka-consumer-1.0-SNAPSHOT-runner.jar ; cd -
 Run a producer to test it
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 ## Lab 03 -Resiliency with Mirror Maker
@@ -426,7 +429,7 @@ my-cluster-kafka-bootstrap.amq-streams-userXX.svc.cluster.local
 Run a producer to test it out
 
 ```
-oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-22:1.2.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
+oc run kafka-producer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-23:1.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic my-topic
 ```
 
 ## Lab 04 - Monitoring Kafka Clusters

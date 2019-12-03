@@ -557,7 +557,7 @@ done
 srcreg="docker://registry.redhat.io/"
 tag="1.3.0"
 ns="amq7/"
-imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-22"
+imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-23"
 
 for img in $imglist
 do
