@@ -310,11 +310,18 @@ Extract secrets and import into a trust store to trust the broker public key.
 ```
 oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/producer/config/certificate.crt
 oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >execs/consumer/config/certificate.crt
+oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >exec-camel/producer/certificate.crt
+oc extract secret/my-cluster-cluster-ca-cert --keys=ca.crt --to=- >exec-camel/consumer/certificate.crt
 
 rm execs/consumer/config/trust.p12
 rm execs/producer/config/trust.p12
+rm exec-camel/consumer/trust.p12
+rm exec-camel/producer/trust.p12
 keytool -importcert -keystore execs/producer/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/producer/config/certificate.crt -noprompt
 keytool -importcert -keystore execs/consumer/config/trust.p12 -storetype PKCS12 -alias root -storepass password -file execs/consumer/config/certificate.crt -noprompt
+
+keytool -importcert -keystore exec-camel/producer/trust.p12 -storetype PKCS12 -alias root -storepass password -file exec-camel/producer/certificate.crt -noprompt
+keytool -importcert -keystore exec-camel/consumer/trust.p12 -storetype PKCS12 -alias root -storepass password -file exec-camel/consumer/certificate.crt -noprompt
 ```
 
 Get the route of your cluster
