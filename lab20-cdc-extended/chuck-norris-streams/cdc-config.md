@@ -19,6 +19,7 @@ for PLUGIN in {mongodb,mysql,postgres}; do \
 done && \
 oc start-build debezium-connect --from-dir=. --follow && \
 cd .. && rm -rf plugins
+
 ```
 
 ### Declare the Debezium Connector within pod

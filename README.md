@@ -54,8 +54,8 @@ List of images to be imported. Replace LOCAL with your own local repo ie : `dock
 ### Add trusted certificate for openshift image registry manipulations on distant machines
 ```
 oc extract -n default secrets/registry-certificates --keys=registry.crt
-cp registry.crt /etc/pki/ca-trust/source/anchors/registry-openshift-ca.crt
-update-ca-trust extract
+sudo cp registry.crt /etc/pki/ca-trust/source/anchors/registry-openshift-ca.crt
+sudo update-ca-trust extract
 ```
 (On archlinux)
 
@@ -104,6 +104,13 @@ do
  echo docker://$REGISTRY/openshift/$targetpfx$img:$tag
  skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
 done
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
 ```
 
 ### Apicurito images with Skopeo
@@ -118,6 +125,14 @@ origpfx=fuse-
 targetsfx=-ui
 imglist="apicurito"
 
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo --insecure-policy  copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$img$targetsfx:$tag
+done
+
+
 for img in $imglist
 do
  echo $srcreg$ns$origpfx$img:$tag
@@ -129,6 +144,8 @@ do
  echo docker://$REGISTRY/openshift/$img$targetsfx:$tag
  skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$img$targetsfx:$tag
 done
+
+
 
 ```
 
@@ -143,6 +160,13 @@ ns="fuse7/"
 origpfx=fuse-
 targetpfx=fuse-
 imglist="apicurito-generator"
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
 
 for img in $imglist
 do
@@ -170,6 +194,13 @@ imglist="amq-broker"
 for img in $imglist
 do
  echo $srcreg$ns$img:$tag
+ skopeo --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
  skopeo copy --screds $user:$pass $srcreg$ns$img:$tag oci:./target:$ns$img:$tag
 done
 
@@ -190,6 +221,14 @@ srcreg="docker://registry.redhat.io/"
 tag="1.6"
 ns="amq7/"
 imglist="amq-interconnect"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
 
 for img in $imglist
 do
@@ -214,6 +253,14 @@ tag="1.3.0"
 ns="amq7/"
 imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-23"
 
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+
 for img in $imglist
 do
  echo $srcreg$ns$img:$tag
@@ -234,6 +281,14 @@ srcreg="docker://registry.redhat.io/"
 tag="1.3"
 ns="amq7/"
 imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass  --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
 
 for img in $imglist
 do
@@ -257,6 +312,14 @@ tag="v3.11"
 ns="openshift3/"
 imglist="prometheus grafana oauth-proxy"
 
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo --insecure-policy  copy --screds $user:$pass  --dest-creds=$ocuser:$octoken $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+
 for img in $imglist
 do
  echo $srcreg$ns$img:$tag
@@ -279,6 +342,14 @@ srcreg="docker://registry.redhat.io/"
 tag="1.0"
 ns="redhat-sso-7/"
 imglist="sso73-openshift"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
 
 for img in $imglist
 do
@@ -462,6 +533,8 @@ do
  echo $srcreg$ns$img:$tag
  skopeo copy --screds $user:$pass $srcreg$ns$img:$tag oci:./target:$ns$img:$tag
 done
+
+
 ```
 
 /!\WIP does not work at the moment
@@ -625,3 +698,123 @@ skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:fuse7-t
 skopeo --insecure-policy copy --dest-creds=$ocuser:$octoken oci:./target:jboss-amq-6/amq63-openshift:1.3 docker://$REGISTRY/openshift/amq63-openshift:1.3
 
 ```
+
+
+## Complete Download Upload Direct
+
+```
+srcreg="docker://registry.redhat.io/"
+tag="1.5"
+ns="fuse7/"
+origpfx=fuse-
+targetpfx=fuse7-
+imglist="java-openshift console"
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
+
+srcreg="docker://registry.redhat.io/"
+tag="1.5"
+ns="fuse7/"
+origpfx=fuse-
+targetsfx=-ui
+imglist="apicurito"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo --insecure-policy  copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$img$targetsfx:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.5"
+ns="fuse7/"
+origpfx=fuse-
+targetpfx=fuse-
+imglist="apicurito-generator"
+
+for img in $imglist
+do
+ echo $srcreg$ns$origpfx$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$origpfx$img:$tag docker://$REGISTRY/openshift/$targetpfx$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="7.5"
+ns="amq7/"
+imglist="amq-broker"
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.6"
+ns="amq7/"
+imglist="amq-interconnect"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+
+srcreg="docker://registry.redhat.io/"
+tag="1.3.0"
+ns="amq7/"
+imglist="amq-streams-operator amq-streams-bridge amq-streams-kafka-23"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.3"
+ns="amq7/"
+imglist="amq-online-1-standard-controller amq-online-1-agent amq-online-1-broker-plugin amq-online-1-topic-forwarder amq-online-1-mqtt-gateway amq-online-1-mqtt-lwt amq-online-1-address-space-controller amq-online-1-api-server amq-online-1-controller-manager amq-online-1-none-auth-service amq-online-1-auth-plugin amq-online-1-console-init amq-online-1-console-httpd"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass  --dest-creds=$ocuser:$octoken  $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="v3.11"
+ns="openshift3/"
+imglist="prometheus grafana oauth-proxy"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo --insecure-policy  copy --screds $user:$pass  --dest-creds=$ocuser:$octoken $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+srcreg="docker://registry.redhat.io/"
+tag="1.0"
+ns="redhat-sso-7/"
+imglist="sso73-openshift"
+
+
+for img in $imglist
+do
+ echo $srcreg$ns$img:$tag
+ skopeo  --insecure-policy copy --screds $user:$pass --dest-creds=$ocuser:$octoken $srcreg$ns$img:$tag docker://$REGISTRY/openshift/$img:$tag
+done
+
+```
+

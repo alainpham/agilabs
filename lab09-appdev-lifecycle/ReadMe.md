@@ -1,9 +1,13 @@
 # Install stuff
 ```
 
+export ocpmaster=console.ocp.loc:8443
+export ocpmaster=console.88.198.65.4.nip.io:8443
+export ocpmaster=master.msc-7e14.open.redhat.com:443
 
-
-
+export ocpappsurl=apps.ocp.loc
+export ocpappsurl=apps.88.198.65.4.nip.io
+export ocpappsurl=apps.msc-7e14.open.redhat.com
 
 BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-750056-redhat-00004
 oc create -n openshift -f ${BASEURL}/fis-image-streams.json
@@ -12,8 +16,7 @@ oc replace -f ${BASEURL}/fuse-apicurito.yml -n openshift
 
 oc new-project devops
 
-oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.ocp.loc
-oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.apps.88.198.65.4.nip.io
+oc new-app apicurito -p ROUTE_HOSTNAME=apicurito-devops.$ocpappsurl
 
 oc new-app jenkins-persistent -p MEMORY_LIMIT=2Gi -p VOLUME_CAPACITY=4Gi
 oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:devops:jenkins
@@ -28,9 +31,8 @@ Set cpu limit to 4cores for jenkins
 
 oc create -f https://raw.githubusercontent.com/microcks/microcks/master/install/openshift/openshift-persistent-full-template.yml -n openshift
 
-oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-devops.apps.88.198.65.4.nip.io --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-devops.apps.88.198.65.4.nip.io --param=OPENSHIFT_MASTER=https://console.88.198.65.4.nip.io:8443 --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client -n devops
+oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-devops.$ocpappsurl --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-devops.$ocpappsurl --param=OPENSHIFT_MASTER=https://$ocpmaster --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client -n devops
 
-oc new-app --template=microcks-persistent --param=APP_ROUTE_HOSTNAME=microcks-devops.apps.ocp.loc --param=KEYCLOAK_ROUTE_HOSTNAME=keycloak-devops.apps.ocp.loc --param=OPENSHIFT_MASTER=https://console.ocp.loc:8443 --param=OPENSHIFT_OAUTH_CLIENT_NAME=microcks-client -n devops
 ```
 
 # To delete Microck from project

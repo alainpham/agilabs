@@ -398,6 +398,8 @@ Get the password from the secret
 
 ```
 oc get secret secure-topic-reader -o yaml | grep password | sed -E 's/.*password: (.*)/\1/' | base64 -d
+oc get secret secure-topic-writer -o yaml | grep password | sed -E 's/.*password: (.*)/\1/' | base64 -d
+
 ```
 
 Now change it config

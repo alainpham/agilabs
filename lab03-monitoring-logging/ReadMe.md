@@ -26,6 +26,16 @@ cat distrib/promconnect.yml | sed "s/PASSWORD/$pass/" > promconnect.yml
 oc create secret generic grafana-datasources --from-file promconnect.yml -o yaml --dry-run | oc create -f -
 rm promconnect.yml
 
+
+oc create -f distrib/grafana.yml
+
+oc new-app grafana
+
+```
+
+for deleting
+
+```
 oc delete all -l app=grafana
 oc delete service grafana
 oc delete serviceaccount grafana
@@ -33,10 +43,7 @@ oc delete clusterrolebinding grafana-cluster-reader
 oc delete secret grafana-proxy
 oc delete routes grafana
 oc delete configmap grafana-config
-
-oc create -f distrib/grafana.yml
 oc replace -f distrib/grafana.yml
-oc new-app grafana
 
 ```
 
