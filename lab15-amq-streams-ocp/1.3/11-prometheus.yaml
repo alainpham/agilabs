@@ -42,15 +42,18 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: prometheus-server
-  namespace: amq-streams
+  namespace: amq-streams-13
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      name: prometheus
   template:
     metadata:
       labels:

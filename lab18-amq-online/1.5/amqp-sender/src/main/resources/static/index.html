@@ -1,0 +1,53 @@
+<html>
+<header>
+    <title>amqp-producer</title>
+    <script src="js/plotly-latest.min.js"></script>
+</header>
+
+<body>
+   <h1>Welcome to the amqp-producer interface</h1>
+   <input type="text" id="number" value="5">
+   <button id="post-btn">send</button>
+   <button id="post-btn-random">send random</button>
+
+   <script>
+
+    var server = "http://" + window.location.host + "/camel/send";
+
+
+    const button = document.getElementById('post-btn');
+
+    button.addEventListener('click', async _ => {
+      try {
+        var nb = document.getElementById("number").value;
+        const response = await fetch(server, {
+          method: 'post',
+          body: nb //Math.round(Math.random() * 100)
+        });
+
+      } catch(err) {
+        console.error(`Error: ${err}`);
+      }
+    });
+
+    const buttonRandom = document.getElementById('post-btn-random');
+
+    buttonRandom.addEventListener('click', async _ => {
+      try {
+        var nb = Math.round(Math.random() * 100);
+        const response = await fetch(server, {
+          method: 'post',
+          body: nb
+        });
+        document.getElementById("number").value = nb;
+      } catch(err) {
+        console.error(`Error: ${err}`);
+      }
+    });
+
+
+</script>
+
+</body>
+
+</html>

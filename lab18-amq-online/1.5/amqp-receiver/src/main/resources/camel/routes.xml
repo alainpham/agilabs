@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+    
+    <route id="amqpclient-sample-route">
+        <from id="amqpclient-sample-route-starter" uri="amqp:queue:my-topic::my-topic-sub1"/>
+        <!-- <from id="amqpclient-sample-route-starter" uri="amqp:topic:my-topic"/> -->
+        <log id="log-body" message=">>> ${body}"/>
+            <to uri="undertow:ws://{{server.address}}:7123/camel/events?sendToAll=true"></to>
+    </route>
+
+</routes>

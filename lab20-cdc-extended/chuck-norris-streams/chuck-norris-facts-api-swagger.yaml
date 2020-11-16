@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   title: chuck-norris-facts-api
   version: 1.0-SNAPSHOT
-host: chuck-norris-facts-api-chuck-movie-rental.apps.144.76.24.92.nip.io
+host: chuck-norris-facts-api-chuck-movie-rental.apps.cluster-eur-5a6d.eur-5a6d.example.opentlc.com
 basePath: /camel
 schemes:
 - http

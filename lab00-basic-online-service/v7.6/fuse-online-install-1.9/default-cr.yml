@@ -1,0 +1,94 @@
+apiVersion: syndesis.io/v1beta1
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  #
+  # Uncomment & specify the OpenShift route for the Fuse Online console.
+  # By default, the installation script calculates the route.
+  # routeHostname: my-test-route.com
+  #
+  # Uncomment & specify a cron utility interval to schedule backups of application data and resources.
+  # backup:
+  #   schedule: every 10m
+  #
+  components:
+    meta:
+      resources:
+        # Uncomment & modify to increase the default memory for this component.
+        # memory: "512Mi"
+        #
+        # Uncomment & modify to increase the persistent volume capacity for this component.
+        # volumeCapacity: 1Gi
+    server:
+      features:
+        # Uncomment & modify to restrict the number of running integrations (0 for no limit).
+        # integrationLimit: 0
+        #
+        # Uncomment & specify a 3scale URL to enable discovery of Fuse Online APIs by 3scale.
+        # managementUrlFor3scale: "https://your.3scale.server.com"
+        #
+        # Add any additional Maven repositories.
+        mavenRepositories:
+          # customRepo1: https://customRepo1
+          # customRepo2: https://customRepo2
+      resources:
+        # Uncomment & modify to increase the default memory for the server.
+        # memory: "800Mi"
+        #
+    database:
+      # Uncomment & specify an external Postgres database URL to use that external database to persist
+      # connection and integration definitions according to the syndesis schema.
+      # externalDbURL: postgresql://custom-postgres-sydnesis:5432
+      #
+      # Uncomment & modify to specify a user name for accessing the external database.
+      # user: syndesis
+      #
+      # Uncomment & modify to specify the external database name.
+      # name: syndesis
+      #
+      # If specifying an external database, add the database password to the syndesis-global-config
+      # secret before installing Fuse Online.
+      #
+      resources:
+        # Uncomment & modify to increase the default memory for the internal database.
+        # memory: 255Mi
+        #
+        # Uncomment & modify to increase default internal storage for connections & integrations.
+        # volumeCapacity: 1Gi
+        # volumeName: test-volume
+    prometheus:
+      resources:
+        # Uncomment & modify to increase the memory for Prometheus.
+        # memory: "512Mi"
+        #
+        # Uncomment & modify to increase the internal storage for Prometheus.
+        # volumeCapacity: "1Gi"
+  addons:
+    # Enables Jaeger activity tracking.
+    jaeger:
+      enabled: true
+    # Enables the alternative Camel K runtime component.
+    camelk:
+      enabled: false
+    # Enables the data virtualization component.
+    dv:
+      enabled: false
+      resources:
+        # Uncomment & modify to increase the default memory for data virtualization.
+        # memory: "1024Mi"
+        #
+    # Enables the Knative component.
+    knative:
+      enabled: false
+    # Enables the Prometheus monitoring component.
+    ops:
+      enabled: false
+    # Exposes public REST API endpoints for CI/CD pipelines.
+    publicApi:
+      enabled: false
+      # Uncomment & modify to specify the public address for invoking REST API endpoints.
+      routeHostname: public-syndesis.a.b.c.d.e
+    # Enables the Todo application for confirming that sample integrations work.
+    todo:
+      enabled: false

@@ -76,12 +76,12 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-http4/2.21.0.fuse-740039-redhat-00001/camel-http4-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-core/2.21.0.fuse-740039-redhat-00001/camel-core-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.22.redhat-2/slf4j-api-1.7.22.redhat-2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/xml/bind/jaxb-core/2.3.0/jaxb-core-2.3.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/xml/bind/jaxb-impl/2.3.0/jaxb-impl-2.3.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-http-common/2.21.0.fuse-740039-redhat-00001/camel-http-common-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpcore/4.4.10/httpcore-4.4.10.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/xml/bind/jaxb-core/2.3.0/jaxb-core-2.3.0.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/xml/bind/jaxb-impl/2.3.0/jaxb-impl-2.3.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-servlet-starter/2.21.0.fuse-740039-redhat-00001/camel-servlet-starter-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-servlet/2.21.0.fuse-740039-redhat-00001/camel-servlet-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-hystrix-starter/2.21.0.fuse-740039-redhat-00001/camel-hystrix-starter-2.21.0.fuse-740039-redhat-00001.jar" enabled="true" runInBatchMode="false"/>

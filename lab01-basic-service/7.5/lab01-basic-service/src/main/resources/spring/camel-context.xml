@@ -14,7 +14,7 @@
             </get>
         </rest>
         <route id="_route1">
-            <from id="_from1" uri="servlet:choice"/>
+            <from id="_from1" uri="servlet:contextPath"/>
             <choice id="_choice1">
                 <when id="_when1">
                     <xpath>/msg = 'random'</xpath>
@@ -28,7 +28,6 @@
                     </setBody>
                 </otherwise>
             </choice>
-            <log message="${body}"/>
         </route>
     </camelContext>
 </beans>

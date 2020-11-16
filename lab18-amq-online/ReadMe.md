@@ -39,4 +39,16 @@ oc apply -f install/components/example-authservices/standard-authservice.yaml
 oc apply -f install/components/example-authservices/none-authservice.yaml
 ```
 
+## Create an address space
+
+Go to AMQ Online console and create an address space called `demo-as`
+
+
+## Import certifacte
+
+```
+oc get addressspace demo-as -n amq-online-infra -o jsonpath='{.status.caCert}{"\n"}' | base64 --decode > ca.crt
+
+keytool -import -trustcacerts -alias root -file ca.crt -storetype pkcs12 -keystore trust.pkcs12 -storepass password -noprompt
+```
 

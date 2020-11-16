@@ -1,0 +1,31 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaUser
+metadata:
+  name: secure-topic-reader
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      # Example consumer Acls for topic lines using consumer group
+      - resource:
+          type: topic
+          name: my-topic
+          patternType: literal
+        operation: Read
+        host: "*"
+      - resource:
+          type: topic
+          name: my-topic
+          patternType: literal
+        operation: Describe
+        host: "*"
+      - resource:
+          type: group
+          name: secure-group
+          patternType: literal
+        operation: Read
+        host: "*"

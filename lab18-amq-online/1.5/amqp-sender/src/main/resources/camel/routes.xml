@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+    <route id="amqpclient-producer-route">
+        <from uri="servlet:send"/>
+        <convertBodyTo type="java.lang.String"/>
+        <log message="${body}"/>
+        <inOnly id="send" uri="amqp:topic:my-topic"/>
+        <setBody>
+            <constant>ok</constant>
+        </setBody>
+    </route>
+
+
+</routes>
