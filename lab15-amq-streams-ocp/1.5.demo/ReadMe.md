@@ -14,6 +14,7 @@
     - [Create external routes for externale clients](#create-external-routes-for-externale-clients)
     - [Configure clients](#configure-clients)
     - [Change cluster to have metrics](#change-cluster-to-have-metrics)
+  - [Troubleshooting OCP](#troubleshooting-ocp)
 ## AMQ Streams components and basic concepts 
 
 ### Custom Resource Definitions
@@ -161,3 +162,8 @@ Adding prometheus & grafana
 cat monitoring/11-prometheus-local.yaml | sed -E "s/TARGET_NAMESPACE/amq-streams/"| oc apply -f -
 oc create configmap grafana-dashboards --from-file=monitoring/dashboards
 oc apply -f monitoring/12-grafana.yaml
+
+
+## Troubleshooting OCP
+
+oc adm policy add-scc-to-user privileged -z default -n amq-streams
